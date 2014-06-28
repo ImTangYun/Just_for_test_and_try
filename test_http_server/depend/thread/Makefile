@@ -1,4 +1,4 @@
-PREFIX := ../
+PREFIX := ../../
 #PANDORA := $(PREFIX)extern_lib/
 #LIB := -Wl,-rpath,../extern_lib -L$(PANDORA) $(PANDORA)/libpandora.a -Wl,-rpath,/opt/apps/gcc-4.7.3/lib64,-rpath,/opt/apps/gcc-4.7.3/lib
 
