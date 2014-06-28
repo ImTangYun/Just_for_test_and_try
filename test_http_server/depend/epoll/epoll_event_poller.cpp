@@ -23,6 +23,7 @@ bool EpollEventPoller::AddEvent(SocketContent* content, bool eanble_read, bool e
 	if (eanble_read) ev.events |= EPOLLIN;
 	if (eable_write) ev.events |= EPOLLOUT;
 	epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, content->GetFd(), &ev);
+	++fd_num_;
 	return true;
 }
 bool EpollEventPoller::SetEvent(SocketContent* content, bool eanble_read, bool eable_write)

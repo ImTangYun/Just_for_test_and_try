@@ -12,7 +12,7 @@ class Socket;
 class SocketContent
 {
 public:
-	SocketContent();
+	SocketContent(Socket* socket);
 	virtual ~SocketContent();
 	int GetFd();
 private:

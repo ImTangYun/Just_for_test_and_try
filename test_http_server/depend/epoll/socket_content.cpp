@@ -7,9 +7,9 @@
 #include "socket.h"
 namespace myspace
 {
-SocketContent::SocketContent()
+SocketContent::SocketContent(Socket* socket)
 {
-	socket_ = new Socket;
+	socket_ = socket;
 }
 SocketContent::~SocketContent()
 {

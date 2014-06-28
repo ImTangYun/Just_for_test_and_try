@@ -23,8 +23,10 @@ public:
 	virtual bool SetEvent(SocketContent* content, bool eanble_read, bool eable_write);
 	virtual bool ClearEvent();
 	virtual int PollEvent(int timeout, IoEvent* io_event, int listenfd);
+	const int fd_num(){return fd_num_;}
 private:
 	int epoll_fd_;
+	int fd_num_;
 };
 
 } // namespace myspace

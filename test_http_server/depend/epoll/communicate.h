@@ -6,6 +6,13 @@ namespace myspace
 {
 using cthread::CThread;
 using cthread::Runnuble;
+class SocketContent;
+class EpollEventPoller;
+enum WhichThread
+{
+	MainLoop = 0,
+	ListenLoop = 1
+};
 class Communicate: public Runnuble
 {
 public:
@@ -15,7 +22,11 @@ public:
 	void EventLoop();
 	virtual void Run(CThread* cthread, void* args);
 private:
-	CThread* thread_;
+	bool running_;
+	CThread* listen_thread_;
+	CThread* run_thread_;
+	SocketContent* listen_;
+	EpollEventPoller* event_poller_;
 };
 } // namespace myspace
 
