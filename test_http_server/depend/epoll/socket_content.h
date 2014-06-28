@@ -7,8 +7,8 @@
 #define EPOLL_SOCKET_CONTENT
 namespace myspace
 {
-class Socket;
 
+class Socket;
 class SocketContent
 {
 public:
