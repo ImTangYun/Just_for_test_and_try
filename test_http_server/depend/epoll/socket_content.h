@@ -5,9 +5,9 @@
  */
 #ifndef EPOLL_SOCKET_CONTENT
 #define EPOLL_SOCKET_CONTENT
-class Socket;
 namespace myspace
 {
+class Socket;
 
 class SocketContent
 {
