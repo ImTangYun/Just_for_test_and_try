@@ -12,7 +12,7 @@ class SocketHandler
 public:
 	SocketHandler();
 	virtual ~SocketHandler();
-	virtual void OnReceived();
+	// virtual void OnReceived(int fd);
 	virtual void OnClosed();
 	virtual void OnSent();
 };

@@ -14,7 +14,6 @@ EpollEventPoller::EpollEventPoller()
 }
 EpollEventPoller::~EpollEventPoller()
 {
-
 }
 bool EpollEventPoller::AddEvent(SocketContent* content, bool eanble_read, bool eable_write)
 {
@@ -45,13 +44,8 @@ int EpollEventPoller::PollEvent(int timeout, IoEvent* io_event, int listenfd)
 	for (int i = 0; i < nfds; ++i) {
 		if (events[i].data.fd == listenfd) {
 			io_event[i].mask_ = NewConnect;
-		} else if (events[i].events&EPOLLIN) {
-			io_event[i].mask_ = Readable;
-		} else if (events[i].events&EPOLLOUT) {
-			io_event[i].mask_ = Writable;
-		} else {
-			io_event[i].mask_ = OtherThing;
 		}
+		io_event[i].event_code_ = events[i].events;
 	}
 	return nfds;
 }

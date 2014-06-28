@@ -16,10 +16,11 @@ enum WhichThread
 class Communicate: public Runnuble
 {
 public:
-	Communicate();
+	Communicate(SocketContent* listen);
 	~Communicate();
 	void Start();
 	void EventLoop();
+	void DealWithFd(int fd);
 	virtual void Run(CThread* cthread, void* args);
 private:
 	bool running_;

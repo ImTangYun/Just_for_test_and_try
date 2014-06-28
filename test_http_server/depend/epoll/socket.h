@@ -13,7 +13,7 @@ class Socket
 {
 public:
 	Socket();
-	~Socket();
+	~Socket(){}
 	void BuildListen();
 	void SetFd(int sockfd);
 	const int sockfd();

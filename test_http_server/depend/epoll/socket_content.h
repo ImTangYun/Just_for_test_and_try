@@ -14,7 +14,12 @@ class SocketContent
 public:
 	SocketContent(Socket* socket);
 	virtual ~SocketContent();
+	virtual void OnConnect();
+	virtual void OnReceived(int fd);
+	virtual void Onclosed();
+	virtual void OnTimeOut();
 	int GetFd();
+	void SetSocket(Socket* socket);
 private:
 	Socket* socket_;
 };
