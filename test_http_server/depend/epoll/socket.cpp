@@ -16,6 +16,10 @@ namespace myspace
 {
 Socket::Socket()
 {
+}
+
+void Socket::BuildListen()
+{
 	struct sockaddr_in servaddr;
 	sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd_ == -1) {
@@ -35,7 +39,10 @@ Socket::Socket()
 		exit(1);
 	}
 }
-
+void Socket::SetFd(int sockfd)
+{
+	sockfd_ = sockfd;
+}
 const int Socket::sockfd()
 {
 	return sockfd_;

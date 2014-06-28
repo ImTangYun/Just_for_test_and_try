@@ -22,7 +22,7 @@ public:
 	virtual bool AddEvent(SocketContent* content, bool eanble_read, bool eable_write);
 	virtual bool SetEvent(SocketContent* content, bool eanble_read, bool eable_write);
 	virtual bool ClearEvent();
-	virtual int PollEvent(int timeout, int count);
+	virtual int PollEvent(int timeout, IoEvent* io_event, int listenfd);
 private:
 	int epoll_fd_;
 };

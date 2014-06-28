@@ -11,6 +11,18 @@ class SocketContent;
 
 namespace myspace
 {
+enum EventCode
+{
+	Readable = 0,
+	Writable = 1,
+	OtherThing = 2,
+	NewConnect = 3
+};
+struct IoEvent
+{
+	SocketContent* socket_content;
+	EventCode mask_ = OtherThing;
+};
 class EventPoller
 {
 public:
@@ -19,7 +31,7 @@ public:
 	virtual bool AddEvent(SocketContent* content, bool eanble_read, bool eable_write) = 0;
 	virtual bool SetEvent(SocketContent* content, bool eanble_read, bool eable_write) = 0;
 	virtual bool ClearEvent() = 0;
-	virtual int PollEvent(int timeout, int count) = 0;
+	virtual int PollEvent(int timeout, IoEvent* io_event, int listenfd) = 0;
 };
 
 } // namespace myspace

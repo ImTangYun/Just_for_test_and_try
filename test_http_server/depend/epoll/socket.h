@@ -14,6 +14,8 @@ class Socket
 public:
 	Socket();
 	~Socket();
+	void BuildListen();
+	void SetFd(int sockfd);
 	const int sockfd();
 private:
 	int sockfd_;
