@@ -1,6 +1,5 @@
 PREFIX := ../../
-#PANDORA := $(PREFIX)extern_lib/
-#LIB := -Wl,-rpath,../extern_lib -L$(PANDORA) $(PANDORA)/libpandora.a -Wl,-rpath,/opt/apps/gcc-4.7.3/lib64,-rpath,/opt/apps/gcc-4.7.3/lib
+LIB := $(PREFIX)/extern_lib/libthread.a -lpthread
 
 INCS := $(PREFIX) $(PREFIX)/extern_include
 USER_MARCOS := _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE
@@ -27,7 +26,7 @@ $(EPOLL_LIB_SO_TAGS): $(OBJS)
 	$(CC) --shared -fPIC -o $@ $(OBJS)
 
 %.o:%.cpp
-	$(CC) $(CPPFLAGS) $(addprefix -D,$(USER_MARCOS)) $(addprefix -I,$(INCS)) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(addprefix -D,$(USER_MARCOS)) $(addprefix -I,$(INCS)) $(addprefix -L,$(LIB)) -c $< -o $@
 
 clean:
 	rm -f *.o
