@@ -16,17 +16,18 @@ class ListenHandler: public SocketContent
 public:
 	ListenHandler();
 	~ListenHandler();
-	virtual Package* OnReceived(Package &pack)
+	virtual void OnReceived(Package &pack, Package &send_pack)
 	{
 		printf("length------%d\n", pack.length());
+		char* p = static_cast<char*>(const_cast<void*>(pack.data()));
+		p[pack.length()] = '\0';
+		printf("%s", p);
+		delete [] p;
 		char *buff = new char[100];
 		buff[0] = 'h';
 		buff[1] = 'e';
 		buff[2] = 'l';
 		buff[3] = '\n';
-
-		Package* package = new Package(buff, 4, pack.GetFd());
-		return package;
 	}
 	virtual void OnReceived(void* buff, int length)
 	{

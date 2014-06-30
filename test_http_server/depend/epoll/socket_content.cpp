@@ -11,7 +11,6 @@ namespace myspace
 SocketContent::SocketContent(Socket* socket)
 {
 	socket_ = socket;
-	package_ = NULL;
 }
 SocketContent::~SocketContent()
 {
@@ -36,9 +35,8 @@ void SocketContent::OnReceived(void* buff, int length)
 {
 	
 }
-Package* SocketContent::OnReceived(Package &pack)
+void SocketContent::OnReceived(Package &pack, Package &send_pack)
 {
-	return NULL;
 }
 void SocketContent::Onclosed()
 {

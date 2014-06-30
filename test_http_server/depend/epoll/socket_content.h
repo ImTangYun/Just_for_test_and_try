@@ -17,13 +17,12 @@ public:
 	SocketContent(Socket* socket);
 	virtual ~SocketContent();
 	virtual void OnConnect();
-	virtual Package* OnReceived(Package &pack);
+	virtual void OnReceived(Package &pack, Package &send_pack);
 	virtual void OnReceived(void* buff, int length);
 	virtual void Onclosed();
 	virtual void OnTimeOut();
 	int GetFd();
 	void SetSocket(Socket* socket);
-	Package* package_;
 private:
 	Socket* socket_;
 };

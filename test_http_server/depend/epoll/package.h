@@ -13,6 +13,7 @@ public:
 	Package(void*ptr, int length, int fd);
 	~Package();
 	const void* data();
+	void SetData(void*ptr);
 	int length();
 	void SetTime(int time);
 	int Time();

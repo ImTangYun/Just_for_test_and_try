@@ -12,7 +12,7 @@
 #include "socket_content.h"
 namespace myspace
 {
-Communicate::Communicate(SocketContent* listen)
+Communicate::Communicate(SocketContent* listen): send_pack_(NULL, 0, 0)
 {
 	listen_thread_ = new CThread;
 	run_thread_ = new CThread;
@@ -63,34 +63,33 @@ void Communicate::EventLoop()
 			} else if (io_event[i].mask_ == IoReadable) {
 				char *buff = new char[MAX_RECV_LENGTH];
 				int length = recv(io_event[i].socket_content_->GetFd(), buff, MAX_RECV_LENGTH, 0);
-				printf("===length: %d\n", length);
-				// listen_->OnReceived((void*)buff, length);
+				// printf("===length: %d\n", length);
+				listen_->OnReceived((void*)buff, length);
 				Package pack(buff, length, io_event[i].socket_content_->GetFd());
-				io_event[i].socket_content_->package_ 
-					= static_cast<Package*>(listen_->OnReceived(pack));
+				listen_->OnReceived(pack, send_pack_);
 				// buff[length] = '\0';
 				// printf("-----\n%s\n-------\n", buff);
 				event_poller_->SetEvent(io_event[i].socket_content_, false, true);
 			} else if (io_event[i].mask_ == IoWritable) {
+				printf("out fd: %d", io_event[i].socket_content_->GetFd());
 				// char buff[100] = "i have received some data\n";
-				if (io_event[i].socket_content_ == NULL)
+				/*if (io_event[i].socket_content_ == NULL)
 					continue;
 				if (io_event[i].socket_content_->package_ == NULL)
 					continue;
 				if (io_event[i].socket_content_->package_->data() == NULL)
-					continue;
-				int length = send(io_event[i].socket_content_->GetFd(),
+					continue;*/
+				/*int length = send(io_event[i].socket_content_->GetFd(),
 						io_event[i].socket_content_->package_->data(),
 						io_event[i].socket_content_->package_->length(), 0);
 				delete [] static_cast<char*>(const_cast<void*>
 						(io_event[i].socket_content_->package_->data()));
 				delete io_event[i].socket_content_->package_;
 				io_event[i].socket_content_->package_ = NULL;
-				printf("send: %d\n", length);
+				printf("send: %d\n", length);*/
 				event_poller_->SetEvent(io_event[i].socket_content_, true, false);
 			}
 		}
-		usleep(1000);
 	}
 }
 void Communicate::DealWithFd(int fd)

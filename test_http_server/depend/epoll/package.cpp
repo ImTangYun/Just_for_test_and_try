@@ -14,6 +14,10 @@ Package::Package(void*ptr, int length, int fd)
 	fd_ = fd;
 	time_ = time(0);
 }
+void Package::SetData(void* ptr)
+{
+	data_ = ptr;
+}
 Package::~Package()
 {
 }
