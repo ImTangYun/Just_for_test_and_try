@@ -1,7 +1,8 @@
 #ifndef COMMUNICATE_H_
 #define COMMUNICATE_H_
 #include "Cthread.h"
-
+#include "package.h"
+#define MAX_RECV_LENGTH 10000
 namespace myspace
 {
 using cthread::CThread;

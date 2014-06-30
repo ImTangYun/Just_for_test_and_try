@@ -5,6 +5,7 @@
  */
 #ifndef EPOLL_SOCKET_CONTENT
 #define EPOLL_SOCKET_CONTENT
+#include "package.h"
 namespace myspace
 {
 
@@ -15,7 +16,8 @@ public:
 	SocketContent(Socket* socket);
 	virtual ~SocketContent();
 	virtual void OnConnect();
-	virtual void OnReceived(int fd);
+	virtual void OnReceived(Package &pack);
+	virtual void OnReceived(void* buff, int length);
 	virtual void Onclosed();
 	virtual void OnTimeOut();
 	int GetFd();

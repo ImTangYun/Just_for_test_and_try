@@ -31,7 +31,11 @@ void SocketContent::OnConnect()
 {
 
 }
-void SocketContent::OnReceived(int fd)
+void SocketContent::OnReceived(void* buff, int length)
+{
+	
+}
+void SocketContent::OnReceived(Package &pack)
 {
 
 }

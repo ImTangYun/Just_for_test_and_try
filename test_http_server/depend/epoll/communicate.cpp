@@ -61,10 +61,14 @@ void Communicate::EventLoop()
 				SocketContent* socket_content = new SocketContent(socket);
 				event_poller_->AddEvent(socket_content, true, false);
 			} else if (io_event[i].mask_ == IoReadable) {
-				char buff[1000];
-				int length = recv(io_event[i].socket_content_->GetFd(), buff, sizeof(buff), 0);
-				buff[length] = '\0';
-				printf("-----\n%s\n-------\n", buff);
+				char *buff = new char[MAX_RECV_LENGTH];
+				int length = recv(io_event[i].socket_content_->GetFd(), buff, MAX_RECV_LENGTH, 0);
+				printf("===length: %d\n", length);
+				// listen_->OnReceived((void*)buff, length);
+				Package pack(buff, length, io_event[i].socket_content_->GetFd());
+				listen_->OnReceived(pack);
+				// buff[length] = '\0';
+				// printf("-----\n%s\n-------\n", buff);
 				event_poller_->SetEvent(io_event[i].socket_content_, false, true);
 			} else if (io_event[i].mask_ == IoWritable) {
 				char buff[100] = "i have received some data\n";
