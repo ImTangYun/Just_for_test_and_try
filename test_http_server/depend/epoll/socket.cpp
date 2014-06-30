@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <memory.h>
 #include <string.h>
 #include <unistd.h>
@@ -36,6 +37,21 @@ void Socket::BuildListen()
 	}
 	if (listen(sockfd_, 10) == -1) {
 		printf( "listen error in socket.cpp->Socket::Socket\n");
+		exit(1);
+	}
+	SetNonBlocking();
+}
+void Socket::SetNonBlocking()
+{
+	int opts;
+	opts = fcntl(sockfd_, F_GETFL);
+	if (opts < 0) {
+		printf("error Socket->SetNonBlocking()1\n");
+		exit(1);
+	}
+	opts = opts|O_NONBLOCK;
+	if (fcntl(sockfd_, F_SETFL, opts)) {
+		printf("error Socket->SetNonBlocking()2\n");
 		exit(1);
 	}
 }

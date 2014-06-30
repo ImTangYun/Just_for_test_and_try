@@ -1,3 +1,6 @@
 #!/bin/sh
-cd ../makedir
-./link.sh
+make clean
+make
+make install
+cd ../../src/
+make

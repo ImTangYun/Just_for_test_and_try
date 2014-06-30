@@ -14,14 +14,16 @@ namespace myspace
 {
 enum EventCode
 {
-	Readable = EPOLLIN,
-	Writable = EPOLLOUT,
-	OtherThing = 2,
-	NewConnect = 3
+	OtherThing = 0,
+	IoWritable = 1, // EPOLLOUT,
+	IoClosed = 2,
+	IoReadable = 3, // EPOLLIN,
+	NewConnect = 4
 };
 struct IoEvent
 {
-	SocketContent* socket_content;
+	int fd_;
+	SocketContent* socket_content_ = NULL;
 	EventCode mask_ = OtherThing;
 	int event_code_;
 };

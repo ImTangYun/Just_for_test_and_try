@@ -17,6 +17,8 @@ public:
 	void BuildListen();
 	void SetFd(int sockfd);
 	const int sockfd();
+protected:
+	void SetNonBlocking();
 private:
 	int sockfd_;
 };

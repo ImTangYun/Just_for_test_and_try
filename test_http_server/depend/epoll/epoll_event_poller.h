@@ -24,6 +24,9 @@ public:
 	virtual bool ClearEvent();
 	virtual int PollEvent(int timeout, IoEvent* io_event, int listenfd);
 	const int fd_num(){return fd_num_;}
+protected:
+	void SetNoBlocking(int fd);
+	// void SetNonBlocking();
 private:
 	int epoll_fd_;
 	int fd_num_;

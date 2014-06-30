@@ -50,32 +50,28 @@ void Communicate::EventLoop()
 	IoEvent io_event[MAX_EVENT_NUM];
 	
 	while (running_) {
-		printf("epoll listenning....\n");
+		// printf("epoll listenning....\n");
 		int event_num = event_poller_->PollEvent(500,
 				io_event, listen_->GetFd());
 		for (int i = 0; i < event_num; ++i) {
-			
-			// a new connection request comming
-			if (io_event[i].mask_ == NewConnect) {
-				if (event_poller_->fd_num() >= MAX_EVENT_NUM)
-					continue;
+			if (io_event[i].socket_content_->GetFd() == listen_->GetFd()) {
 				int connfd = accept(listen_->GetFd(), NULL, NULL);
-				if (connfd == -1) {
-					printf("accept error in communicate.cpp->Communicate->EventLoop()\n");
-					exit(1);
-				}
 				Socket* socket = new Socket;
 				socket->SetFd(connfd);
 				SocketContent* socket_content = new SocketContent(socket);
-				event_poller_->AddEvent(socket_content, true, true);
-				listen_->OnConnect();
-				listen_->OnReceived(connfd);
-				// DealWithFd(connfd);
-				continue;
+				event_poller_->AddEvent(socket_content, true, false);
+			} else if (io_event[i].mask_ == IoReadable) {
+				char buff[1000];
+				int length = recv(io_event[i].socket_content_->GetFd(), buff, sizeof(buff), 0);
+				buff[length] = '\0';
+				printf("-----\n%s\n-------\n", buff);
+				event_poller_->SetEvent(io_event[i].socket_content_, false, true);
+			} else if (io_event[i].mask_ == IoWritable) {
+				char buff[100] = "i have received some data\n";
+				int length = send(io_event[i].socket_content_->GetFd(), buff, 26, 0);
+				printf("send: %d\n", length);
+				event_poller_->SetEvent(io_event[i].socket_content_, true, false);
 			}
-			/*if ((io_event[i].event_code_ | Readable) || (io_event[i].event_code_ | Writable)) {
-				listen_->OnReceived(io_event[i].socket_content->GetFd());
-			}*/
 		}
 		usleep(1000);
 	}
