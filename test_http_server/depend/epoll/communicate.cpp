@@ -66,13 +66,26 @@ void Communicate::EventLoop()
 				printf("===length: %d\n", length);
 				// listen_->OnReceived((void*)buff, length);
 				Package pack(buff, length, io_event[i].socket_content_->GetFd());
-				listen_->OnReceived(pack);
+				io_event[i].socket_content_->package_ 
+					= static_cast<Package*>(listen_->OnReceived(pack));
 				// buff[length] = '\0';
 				// printf("-----\n%s\n-------\n", buff);
 				event_poller_->SetEvent(io_event[i].socket_content_, false, true);
 			} else if (io_event[i].mask_ == IoWritable) {
-				char buff[100] = "i have received some data\n";
-				int length = send(io_event[i].socket_content_->GetFd(), buff, 26, 0);
+				// char buff[100] = "i have received some data\n";
+				if (io_event[i].socket_content_ == NULL)
+					continue;
+				if (io_event[i].socket_content_->package_ == NULL)
+					continue;
+				if (io_event[i].socket_content_->package_->data() == NULL)
+					continue;
+				int length = send(io_event[i].socket_content_->GetFd(),
+						io_event[i].socket_content_->package_->data(),
+						io_event[i].socket_content_->package_->length(), 0);
+				delete [] static_cast<char*>(const_cast<void*>
+						(io_event[i].socket_content_->package_->data()));
+				delete io_event[i].socket_content_->package_;
+				io_event[i].socket_content_->package_ = NULL;
 				printf("send: %d\n", length);
 				event_poller_->SetEvent(io_event[i].socket_content_, true, false);
 			}
