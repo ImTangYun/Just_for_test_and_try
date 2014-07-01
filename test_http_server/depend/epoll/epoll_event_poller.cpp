@@ -64,9 +64,13 @@ bool EpollEventPoller::SetEvent(SocketContent* content, bool eanble_read, bool e
 	epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, content->GetFd(), &ev);
 	return true;
 }
-bool EpollEventPoller::ClearEvent()
+bool EpollEventPoller::ClearEvent(SocketContent* content)
 {
-
+	if (!content) return false;
+	close(content->GetFd());
+	struct epoll_event ev;
+	epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, content->GetFd(), &ev);
+	delete content;
 	return true;
 }
 int EpollEventPoller::PollEvent(int timeout, IoEvent* io_event, int listenfd)
@@ -89,64 +93,4 @@ int EpollEventPoller::PollEvent(int timeout, IoEvent* io_event, int listenfd)
 	}
 	return nfds;
 }
-#if 0
-int EpollEventPoller::PollEvent(int timeout, IoEvent* io_event, int listenfd)
-{
-	struct epoll_event ev, events[MAX_EVENT_NUM];
-	int nfds = epoll_wait(epoll_fd_, events, MAX_EVENT_NUM, timeout);
-	printf("%d\n", nfds);
-	if (nfds > 0)
-		memset(io_event, 0, sizeof(IoEvent) * MAX_EVENT_NUM);
-	for (int i = 0; i < nfds; ++i) {
-		if (events[i].data.fd == listenfd) {
-			io_event[i].mask_ = NewConnect;
-
-			int connfd = accept(listenfd, NULL, NULL);
-			SetNoBlocking(connfd);	
-			ev.data.fd = connfd;
-			ev.events = EPOLLET | EPOLLIN;//  | EPOLLOUT; // |EPOLLET;
-			// if (eanble_read) ev.events |= EPOLLIN;
-			// if (eable_write) ev.events |= EPOLLOUT;
-
-			epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, connfd, &ev);
-			++fd_num_;
-		} else if (events[i].events&EPOLLIN) {
-			char buff[10000];
-
-			int length;
-			length = recv(events[i].data.fd, buff, sizeof(buff), 0);
-			buff[length] = '\0';
-			printf("epoll in length: %d %s\n", length, buff);
-			// ev.events=EPOLLOUT|EPOLLET;
-			ev.events = EPOLLET;
-			// close(events[i].data.fd);
-			epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, events[i].data.fd, &ev);
-			// epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, events[i].data.fd, &ev);
-			send(events[i].data.fd, buff, length, 0);
-
-			// length = send(events[i].data.fd, "hello world!\n", length, 0);
-			printf("epoll in 111111\n");
-		} else if (events[i].events&EPOLLOUT) {
-			printf("epoll out 111111\n");
-			/*char buff[1000];
-			snprintf(buff, sizeof(buff), "i have received some data\n");
-			int flag = 0;
-			flag |= MSG_NOSIGNAL;
-			int length = send(events[i].data.fd, buff, 10, 0);
-			if (length == -1) {
-				printf("error at epoll_event_poller.cpp->EpollEventPoller->PollEvent()\n");
-				exit(1);
-			}
-			ev.events=EPOLLIN|EPOLLET;
-			epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, events[i].data.fd, &ev);
-			printf("epoll out length: %d %s\n", length, buff);
-			*/
-		}
-		
-		// io_event[i].event_code_ = events[i].events;
-		// io_event[i].fd_ = events[i].data.fd;
-	}
-	return nfds;
-}
-#endif
 } // namespace myspace

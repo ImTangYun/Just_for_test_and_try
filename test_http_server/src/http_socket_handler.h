@@ -27,7 +27,10 @@ public:
 		printf("--------OnReceived-------\n");
 		char* buf = (char*)(const_cast<void*>(pack.data()));
 		buf[pack.length()] = '\0';
-		printf("----\n%s\n----\n", buf);
+		// printf("----\n%s\n----\n", buf);
+		send(pack.GetFd(), "HTTP/1.0 200 OK\t\n", 17, 0);
+		send(pack.GetFd(), "Content-type: text/html\r\n", 25, 0);
+		send(pack.GetFd(), "Content-Length: 13\r\n\n", 21, 0);
 		send(pack.GetFd(), "hello world!\n", 13, 0);
 	}
 	virtual void OnReceived(void* buff, int length)

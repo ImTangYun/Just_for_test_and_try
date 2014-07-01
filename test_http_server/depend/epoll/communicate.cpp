@@ -50,7 +50,6 @@ void Communicate::EventLoop()
 	IoEvent io_event[MAX_EVENT_NUM];
 	
 	while (running_) {
-		// printf("epoll listenning....\n");
 		int event_num = event_poller_->PollEvent(500,
 				io_event, listen_->GetFd());
 		for (int i = 0; i < event_num; ++i) {
@@ -63,31 +62,21 @@ void Communicate::EventLoop()
 			} else if (io_event[i].mask_ == IoReadable) {
 				char *buff = new char[MAX_RECV_LENGTH];
 				int length = recv(io_event[i].socket_content_->GetFd(), buff, MAX_RECV_LENGTH, 0);
-				// printf("===length: %d\n", length);
+				if (length == 0) {
+					event_poller_->ClearEvent(io_event[i].socket_content_);
+					printf("closed fd: %d\n", io_event[i].socket_content_->GetFd());
+					continue;
+				}
 				listen_->OnReceived((void*)buff, length);
 				Package pack(buff, length, io_event[i].socket_content_->GetFd());
 				listen_->OnReceived(pack, send_pack_);
-				// buff[length] = '\0';
-				// printf("-----\n%s\n-------\n", buff);
 				event_poller_->SetEvent(io_event[i].socket_content_, false, true);
 			} else if (io_event[i].mask_ == IoWritable) {
-				printf("out fd: %d", io_event[i].socket_content_->GetFd());
-				// char buff[100] = "i have received some data\n";
-				/*if (io_event[i].socket_content_ == NULL)
-					continue;
-				if (io_event[i].socket_content_->package_ == NULL)
-					continue;
-				if (io_event[i].socket_content_->package_->data() == NULL)
-					continue;*/
-				/*int length = send(io_event[i].socket_content_->GetFd(),
-						io_event[i].socket_content_->package_->data(),
-						io_event[i].socket_content_->package_->length(), 0);
-				delete [] static_cast<char*>(const_cast<void*>
-						(io_event[i].socket_content_->package_->data()));
-				delete io_event[i].socket_content_->package_;
-				io_event[i].socket_content_->package_ = NULL;
-				printf("send: %d\n", length);*/
+				printf("out fd: %d\n", io_event[i].socket_content_->GetFd());
+
 				event_poller_->SetEvent(io_event[i].socket_content_, true, false);
+			} else if (io_event[i].mask_ == IoClosed) {
+				printf("closed\n");
 			}
 		}
 	}

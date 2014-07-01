@@ -21,7 +21,7 @@ public:
 	virtual ~EpollEventPoller();
 	virtual bool AddEvent(SocketContent* content, bool eanble_read, bool eable_write);
 	virtual bool SetEvent(SocketContent* content, bool eanble_read, bool eable_write);
-	virtual bool ClearEvent();
+	virtual bool ClearEvent(SocketContent* content);
 	virtual int PollEvent(int timeout, IoEvent* io_event, int listenfd);
 	const int fd_num(){return fd_num_;}
 protected:

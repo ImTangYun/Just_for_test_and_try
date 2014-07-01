@@ -34,7 +34,7 @@ public:
 	virtual ~EventPoller(){}
 	virtual bool AddEvent(SocketContent* content, bool eanble_read, bool eable_write) = 0;
 	virtual bool SetEvent(SocketContent* content, bool eanble_read, bool eable_write) = 0;
-	virtual bool ClearEvent() = 0;
+	virtual bool ClearEvent(SocketContent* content) = 0;
 	virtual int PollEvent(int timeout, IoEvent* io_event, int listenfd) = 0;
 };
 
