@@ -5,3 +5,4 @@ make install
 cd ../../src/
 make clean
 make
+rm *.o

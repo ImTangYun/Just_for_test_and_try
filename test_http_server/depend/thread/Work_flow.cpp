@@ -26,7 +26,7 @@ void WorkFlow::Run(CThread* thread, void* args)
 	while (running_) {
 		int *which_thread = (int*)args;
 		Process(*which_thread);
-		sleep(1);
+		sleep(10);
 	}
 }
 void WorkFlow::Stop()

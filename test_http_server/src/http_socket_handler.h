@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include "listen_handler.h"
 #include "package.h"
+#include "response.h"
 namespace http
 {
 using myspace::ListenHandler;
@@ -32,6 +33,8 @@ public:
 		send(pack.GetFd(), "Content-type: text/html\r\n", 25, 0);
 		send(pack.GetFd(), "Content-Length: 13\r\n\n", 21, 0);
 		send(pack.GetFd(), "hello world!\n", 13, 0);
+		Response resp;
+		resp.DealWithRequest(buf, pack.length(), pack.GetFd());
 	}
 	virtual void OnReceived(void* buff, int length)
 	{
