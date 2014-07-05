@@ -31,6 +31,7 @@ void Socket::BuildListen()
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERVER_PORT);
+	printf("server port: %d\n", SERVER_PORT);
 	if (bind(sockfd_, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1) {
 		printf( "bind error in socket.cpp->Socket::Socket\n");
 		exit(1);

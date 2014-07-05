@@ -13,7 +13,7 @@ int main()
 	Communicate* communicate = new Communicate(listen_handler);
 	communicate->Start();
 	WorkFlow work;
-	work.Init(2);
+	work.Init(4);
 	work.Start();
 	sleep(1);
 	sleep(100);

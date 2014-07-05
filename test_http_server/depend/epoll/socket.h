@@ -6,7 +6,7 @@
 #ifndef EPOLL_SOCKET_H_
 #define EPOLL_SOCKET_H_
 #include <sys/socket.h>
-#define SERVER_PORT 6666
+#define SERVER_PORT 4444
 namespace myspace
 {
 class Socket

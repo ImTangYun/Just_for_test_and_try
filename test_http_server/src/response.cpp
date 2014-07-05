@@ -32,6 +32,16 @@ void Response::DealWithRequest(char* data, int length, int fd)
 		close(f);
 	}
 }
+void Response::SendHead(const string &file_name)
+{
+	char buff[1000];
+	int len = 0;
+	char* p = buff;
+	len += snprintf(buff, sizeof(buff), "HTTP/1.0 200 OK\r\n");
+	len += snprintf(p + len, sizeof(buff) - len, "Content-type: %s\r\n",
+			ftype_.GetType(file_name).c_str());
+	printf("test:\n%s\n", buff);
+}
 string Response::RequestFeile(char* data, int length)
 {
 	char buf[1000];
@@ -49,5 +59,5 @@ string Response::RequestFeile(char* data, int length)
 
 	return buf;
 }
-}
+} // namespace http
 

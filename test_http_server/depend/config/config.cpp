@@ -18,6 +18,7 @@ Config::Config(const string &path, char mode = '='): mode_(mode)
 	FILE* fp = fopen(path.c_str(), "rb");
 	if (fp == NULL) {
 		printf("open %s failed!\n", path.c_str());
+		exit(1);
 	}
 	char* line = NULL;
 	size_t len;
@@ -50,6 +51,14 @@ string Config::GetString(const string &key)
 		ret = iter->second;
 	}
 	return ret;
+}
+bool Config::Exist(const string &key)
+{
+	if (key == "") {
+		return false;
+	} 
+	map<string, string>::iterator iter = conf_.find(key);
+	return (iter != conf_.end());
 }
 int Config::GetInt(const string &key)
 {

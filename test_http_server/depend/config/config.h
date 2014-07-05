@@ -18,6 +18,7 @@ public:
 	Config(const string &path, char mode);
 	~Config(){}
 	string GetString(const string &key);
+	bool Exist(const string &key);
 	int GetInt(const string &key);
 	bool GetBool(const string &key);
 private:
