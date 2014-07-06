@@ -14,7 +14,7 @@ class SocketContent;
 class ListenHandler: public SocketContent
 {
 public:
-	ListenHandler();
+	ListenHandler(int port);
 	~ListenHandler();
 	virtual void OnReceived(Package &pack, Package &send_pack)
 	{

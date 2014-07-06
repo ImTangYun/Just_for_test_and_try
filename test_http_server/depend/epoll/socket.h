@@ -14,7 +14,7 @@ class Socket
 public:
 	Socket();
 	~Socket(){}
-	void BuildListen();
+	void BuildListen(int port);
 	void SetFd(int sockfd);
 	const int sockfd();
 protected:

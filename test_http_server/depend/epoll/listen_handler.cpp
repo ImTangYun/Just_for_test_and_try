@@ -8,10 +8,10 @@
 #include "listen_handler.h"
 namespace myspace
 {
-ListenHandler::ListenHandler():SocketContent((Socket*)0)
+ListenHandler::ListenHandler(int port):SocketContent((Socket*)0)
 {
 	Socket* socket = new Socket;
-	socket->BuildListen();
+	socket->BuildListen(port);
 	SocketContent::SetSocket(socket);
 }
 ListenHandler::~ListenHandler()

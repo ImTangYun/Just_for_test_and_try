@@ -19,7 +19,7 @@ Socket::Socket()
 {
 }
 
-void Socket::BuildListen()
+void Socket::BuildListen(int port)
 {
 	struct sockaddr_in servaddr;
 	sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -30,7 +30,7 @@ void Socket::BuildListen()
 	memset(&servaddr, 0, sizeof(sockaddr_in));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(SERVER_PORT);
+	servaddr.sin_port = htons(port);
 	printf("server port: %d\n", SERVER_PORT);
 	if (bind(sockfd_, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1) {
 		printf( "bind error in socket.cpp->Socket::Socket\n");
