@@ -17,7 +17,7 @@ using myspace::Package;
 class HttpSocketHandler: public ListenHandler
 {
 public:
-	HttpSocketHandler();
+	HttpSocketHandler(int port);
 	~HttpSocketHandler();
 	virtual void OnConnect()
 	{

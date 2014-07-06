@@ -6,7 +6,7 @@
 #include "http_socket_handler.h"
 namespace http
 {
-HttpSocketHandler::HttpSocketHandler()
+HttpSocketHandler::HttpSocketHandler(int port):ListenHandler(port)
 {
 }
 HttpSocketHandler::~HttpSocketHandler()

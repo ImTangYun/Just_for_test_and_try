@@ -19,11 +19,13 @@ void Response::DealWithRequest(char* data, int length, int fd)
 {
 	char buff[100];
 	snprintf(buff, sizeof(buff), "no file");
-	string file_name = RequestFeile(data, length);
+	string file_name = http_config_.CGI();
+	file_name += RequestFeile(data, length);
+	printf("request file: %s\n", file_name.c_str());
 	if (!Util::HasFile(file_name)) {
-		SendHead("default.html", fd);
-		SendFileSize("default.html", fd);
-		SendFile("default.html", fd);
+		SendHead(http_config_.CGI() + "./default.html", fd);
+		SendFileSize(http_config_.CGI() + "./default.html", fd);
+		SendFile(http_config_.CGI() + "./default.html", fd);
 	} else {
 		SendHead(file_name, fd);
 		printf("%s\n", file_name.c_str());

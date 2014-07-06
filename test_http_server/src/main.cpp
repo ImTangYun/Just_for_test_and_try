@@ -4,12 +4,15 @@
 #include "communicate.h"
 #include "http_socket_handler.h"
 #include "Cthread.h"
- using cthread::WorkFlow;
+#include "http_conf.h"
+using cthread::WorkFlow;
 using http::HttpSocketHandler;
 using myspace::Communicate;
+using http::HttpConfig;
 int main()
 {
-	HttpSocketHandler* listen_handler = new HttpSocketHandler;
+	HttpConfig http_config;
+	HttpSocketHandler* listen_handler = new HttpSocketHandler(http_config.Port());
 	Communicate* communicate = new Communicate(listen_handler);
 	communicate->Start();
 	WorkFlow work;

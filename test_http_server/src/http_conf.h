@@ -23,7 +23,22 @@ public:
 private:
 	Config ftype_config_;
 };
-class HttpConfig;
+class HttpConfig
+{
+public:
+	HttpConfig();
+	~HttpConfig();
+	string CGI()
+	{
+		return http_config_.GetString("cgi");
+	}
+	int Port()
+	{
+		return http_config_.GetInt("PORT");
+	}
+private:
+	Config http_config_;
+};
 }
 #endif // SRC_CONF_H_
 

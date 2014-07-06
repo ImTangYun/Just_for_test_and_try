@@ -30,5 +30,11 @@ bool FTypeConfig::ExistType(const string& file_type)
 {
 	return ftype_config_.Exist(file_type);
 }
+HttpConfig::HttpConfig():http_config_("../conf/http.conf", '=')
+{
+}
+HttpConfig::~HttpConfig()
+{
+}
 } // namespace http
 

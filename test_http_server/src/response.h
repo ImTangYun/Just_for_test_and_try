@@ -25,6 +25,7 @@ private:
 	void SendFileSize(const string &file_name, int fd);
 	void SendFile(const string &file_name, int fd);
 	FTypeConfig ftype_;
+	HttpConfig http_config_;
 };
 }
 
