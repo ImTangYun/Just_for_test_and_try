@@ -5,7 +5,7 @@
  */
 #ifndef UTIL_UTIL_H_
 #define UTIL_UTIL_H_
-#define MAX_SEND_BUFF 1024 * 1024
+#define MAX_SEND_BUFF 1024
 #include <string>
 namespace myspace
 {

@@ -23,12 +23,15 @@ Config::Config(const string &path, char mode = '='): mode_(mode)
 	char* line = NULL;
 	size_t len;
 	while (getline(&line, &len, fp) != -1) {
+		printf("%s", line);
 		string key;
 		string value;
 		Parse(line, key, value);
 		conf_[key] = value;
 	}
-	fclose(fp);
+	for (auto iter = conf_.begin(); iter != conf_.end(); ++iter) {
+		printf("key:%s, value:%s\n", iter->first.c_str(), iter->second.c_str());
+	}
 }
 void Config::Parse(const string &input, string &key, string &value)
 {
@@ -38,7 +41,7 @@ void Config::Parse(const string &input, string &key, string &value)
 		++i;
 	}
 	++i;
-	for (; i < input.length(); ++i) {
+	for (; i < input.length() && input[i] != '\n'; ++i) {
 		value += input[i];
 	}
 }
@@ -57,6 +60,7 @@ bool Config::Exist(const string &key)
 	if (key == "") {
 		return false;
 	} 
+	printf("finding:%s\n", key.c_str());
 	map<string, string>::iterator iter = conf_.find(key);
 	return (iter != conf_.end());
 }

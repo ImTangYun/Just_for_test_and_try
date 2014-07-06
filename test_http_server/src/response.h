@@ -17,9 +17,13 @@ public:
 	Response():ftype_(string("../conf/ftype.conf"), '='){}
 	~Response(){}
 	void DealWithRequest(char* data, int length, int fd);
+	string FileEnd(const string &file_name);
+	string GetType(const string &type);
 private:
 	string RequestFeile(char* data, int length);
-	void SendHead(const string &file_name);
+	void SendHead(const string &file_name, int fd);
+	void SendFileSize(const string &file_name, int fd);
+	void SendFile(const string &file_name, int fd);
 	FTypeConfig ftype_;
 };
 }

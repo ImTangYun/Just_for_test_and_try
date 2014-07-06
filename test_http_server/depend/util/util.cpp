@@ -31,26 +31,15 @@ string Util::SendFileHead(const string &type)
 }
 bool Util::SafeSendFile(char* buff, int length, int fd)
 {
-	char* p = buff;
-	int offset = 0;
-	if (length < MAX_SEND_BUFF) {
-		printf("i am coming here\n");
-		return send(fd, buff, length, 0) > 0 ;
-	} else {
-		while (1) {
-			int s_length = ((length - offset - 1) >= MAX_SEND_BUFF)?MAX_SEND_BUFF:(length - offset);
-			p = buff;
-			int ret = send(fd, p + offset, s_length, 0);
-			if (ret < 0)
-				return false;
-			else if (ret < MAX_SEND_BUFF) {
-				return true;
-			} else {
-				offset += MAX_SEND_BUFF;
-			}
-		}
+	int left = length;
+	int total = 0;
+	while (total < length) {
+		int n = send(fd, buff + total, left, 0);
+		if (n < 0)
+			return false;
+		left -= n;
+		total += n;
 	}
-
 	return true;
 }
 } // namespace myspace

@@ -16,8 +16,10 @@ FTypeConfig::~FTypeConfig()
 string FTypeConfig::GetType(const string& file_type)
 {
 	if (ExistType(file_type)) {
+		printf("type: %s\n", ftype_config_.GetString(file_type).c_str());
 		return ftype_config_.GetString(file_type);
 	}
+	printf("not exist this kind of file type\n");
 	return "application/x-gzip";
 }
 bool FTypeConfig::Init()

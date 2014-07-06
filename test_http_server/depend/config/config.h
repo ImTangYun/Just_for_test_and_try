@@ -16,13 +16,14 @@ class Config
 {
 public:
 	Config(const string &path, char mode);
-	~Config(){}
+	~Config(){fclose(fp_);}
 	string GetString(const string &key);
 	bool Exist(const string &key);
 	int GetInt(const string &key);
 	bool GetBool(const string &key);
 private:
 	char mode_;
+	FILE* fp_;
 	void Parse(const string &input, string &key, string &value);
 	map<string, string> conf_;
 };
