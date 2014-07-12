@@ -27,10 +27,10 @@ Communicate::~Communicate()
 }
 void Communicate::Start()
 {
-	int listenloop = ListenLoop;
-	listen_thread_->Start(this, (void*)&listenloop);
-	int mainloop = MainLoop;
-	run_thread_->Start(this, (void*)&mainloop);
+	int *listenloop = new int(ListenLoop);
+	listen_thread_->Start(this, (void*)listenloop);
+	int *mainloop = new int(MainLoop);
+	run_thread_->Start(this, (void*)mainloop);
 }
 void Communicate::Run(CThread* cthread, void* args)
 {
@@ -42,8 +42,10 @@ void Communicate::Run(CThread* cthread, void* args)
 		}
 	if (which == MainLoop) {
 		EventLoop();
+        printf("MainLoop\n");
 		usleep(1000);
 	}
+    printf("MainLoop, %d\n", which);
 }
 void Communicate::EventLoop()
 {
