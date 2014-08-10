@@ -1,3 +1,7 @@
+//
+// by:yuntang
+// file: http_server.cpp
+//
 #include <stdlib.h>
 #include <unistd.h>
 #include "http_server.h"
@@ -43,4 +47,4 @@ void HttpServer::StartServer()
     communicate_->Start();
     http_work_flow_->Start();
 }
-}
+} // namespace http

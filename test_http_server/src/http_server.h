@@ -1,5 +1,5 @@
-#ifndef _HTTP_SERVER_H_
-#define _HTTP_SERVER_H_
+#ifndef SRC_HTTP_SERVER_H_
+#define SRC_HTTP_SERVER_H_
 #include "http_work_flow.h"
 #include "response.h"
 #include "taskqueue.h"
@@ -24,6 +24,6 @@ private:
     HttpWorkFlow* http_work_flow_;
     HttpConfig* http_config_;
 };
-}
+} // namespace http
 
-#endif // _HTTP_SERVER_H_
+#endif // SRC_HTTP_SERVER_H_

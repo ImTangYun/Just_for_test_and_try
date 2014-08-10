@@ -1,3 +1,7 @@
+//
+// by : yuntang
+// file: http_work_flow.cpp
+//
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -22,6 +26,7 @@ void HttpWorkFlow::Process(int which_thread)
 void HttpWorkFlow::Response(TaskNode task)
 {
     int connfd = *(int*)task.data_;
+    delete (int*)task.data_;
     printf("HttpWorkFlow::Response(TaskNode task): %d\n", connfd);
     char *buff = new char[10240];
     int length = recv(connfd, buff, 10240, 0); 
