@@ -3,6 +3,7 @@
 #include <queue>
 #include "Cthread.h"
 #include "package.h"
+#include "taskqueue.h"
 #define MAX_RECV_LENGTH 10000
 namespace myspace
 {
@@ -21,6 +22,7 @@ class Communicate: public Runnuble
 public:
 	Communicate(SocketContent* listen);
 	~Communicate();
+    void Init(TaskQueue<TaskNode>* taskqueue);
 	void Start();
 	void EventLoop();
 	void DealWithFd(int fd);
@@ -32,6 +34,7 @@ private:
 	CThread* run_thread_;
 	SocketContent* listen_;
 	EpollEventPoller* event_poller_;
+    TaskQueue<TaskNode>* taskqueue_;
 };
 } // namespace myspace
 

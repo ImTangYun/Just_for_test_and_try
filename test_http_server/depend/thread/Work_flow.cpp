@@ -24,9 +24,11 @@ void WorkFlow::Start()
 void WorkFlow::Run(CThread* thread, void* args)
 {
 	while (running_) {
+        printf("loop begin\n");
 		int *which_thread = (int*)args;
 		Process(*which_thread);
-		sleep(10);
+        printf("loop end\n");
+		usleep(1000);
 	}
 }
 void WorkFlow::Stop()

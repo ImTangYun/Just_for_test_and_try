@@ -25,6 +25,10 @@ Communicate::~Communicate()
 {
 
 }
+void Communicate::Init(TaskQueue<TaskNode>* taskqueue)
+{
+    taskqueue_ = taskqueue;
+}
 void Communicate::Start()
 {
 	int *listenloop = new int(ListenLoop);
@@ -57,10 +61,15 @@ void Communicate::EventLoop()
 		for (int i = 0; i < event_num; ++i) {
 			if (io_event[i].socket_content_->GetFd() == listen_->GetFd()) {
 				int connfd = accept(listen_->GetFd(), NULL, NULL);
-				Socket* socket = new Socket;
-				socket->SetFd(connfd);
-				SocketContent* socket_content = new SocketContent(socket);
-				event_poller_->AddEvent(socket_content, true, false);
+                int* connfd_to_push =  new int(connfd);
+                printf("new connected %d\n", connfd);
+                TaskNode node;
+                node.data_ = (void*)connfd_to_push;
+                taskqueue_->Push(node);
+				// Socket* socket = new Socket;
+				// socket->SetFd(connfd);
+				// SocketContent* socket_content = new SocketContent(socket);
+				// event_poller_->AddEvent(socket_content, true, false);
 			} else if (io_event[i].mask_ == IoReadable) {
 				char *buff = new char[MAX_RECV_LENGTH];
 				int length = recv(io_event[i].socket_content_->GetFd(), buff, MAX_RECV_LENGTH, 0);
