@@ -13,7 +13,7 @@ HttpServer::HttpServer()
     communicate_->Init(taskqueue_);
     printf("after communicate_->Init(taskqueue_)\n");
     http_work_flow_ = new HttpWorkFlow(taskqueue_);
-    bool ret = http_work_flow_->Init(10);
+    bool ret = http_work_flow_->Init(http_config_->Thread_num());
     if (!ret) {
         delete listen_handler_;
         listen_handler_ = NULL;

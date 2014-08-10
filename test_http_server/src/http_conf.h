@@ -32,6 +32,10 @@ public:
 	{
 		return http_config_.GetString("cgi");
 	}
+	int Thread_num()
+	{
+		return http_config_.GetInt("thread_num");
+	}
 	int Port()
 	{
 		return http_config_.GetInt("PORT");
