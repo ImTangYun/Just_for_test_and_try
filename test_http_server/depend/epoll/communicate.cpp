@@ -59,22 +59,24 @@ void Communicate::EventLoop()
 		int event_num = event_poller_->PollEvent(500,
 				io_event, listen_->GetFd());
 		for (int i = 0; i < event_num; ++i) {
-
-			if (io_event[i].socket_content_->GetFd() == listen_->GetFd()) {
+ 
+	
+	        if (io_event[i].socket_content_->GetFd() == listen_->GetFd()) {
 
                 int connfd = accept(listen_->GetFd(), NULL, NULL);
-                int* connfd_to_push =  new int(connfd);
-                printf("new connected %d\n", connfd);
-                TaskNode node;
+	            int* connfd_to_push =  new int(connfd);
+	            printf("new connected %d\n", connfd);
+	            TaskNode node;
                 node.data_ = (void*)connfd_to_push;
-                taskqueue_->Push(node);
+	            taskqueue_->Push(node);
 				// Socket* socket = new Socket;
 				// socket->SetFd(connfd);
 				// SocketContent* socket_content = new SocketContent(socket);
 				// event_poller_->AddEvent(socket_content, true, false);
 			} else if (io_event[i].mask_ == IoReadable) {
 				char *buff = new char[MAX_RECV_LENGTH];
-				int length = recv(io_event[i].socket_content_->GetFd(), buff, MAX_RECV_LENGTH, 0);
+				int length = recv(io_event[i].socket_content_->GetFd(),
+                        buff, MAX_RECV_LENGTH, 0);
 				if (length == 0) {
 					event_poller_->ClearEvent(io_event[i].socket_content_);
 					printf("closed fd: %d\n", io_event[i].socket_content_->GetFd());
