@@ -36,6 +36,10 @@ public:
 	{
 		return http_config_.GetInt("thread_num");
 	}
+	string Tmp()
+	{
+		return http_config_.GetString("tmp");
+	}
 	int Port()
 	{
 		return http_config_.GetInt("PORT");

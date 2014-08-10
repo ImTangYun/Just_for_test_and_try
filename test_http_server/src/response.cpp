@@ -27,10 +27,23 @@ void Response::DealWithRequest(char* data, int length, int fd)
 		SendFileSize(http_config_.CGI() + "./default.html", fd);
 		SendFile(http_config_.CGI() + "./default.html", fd);
 	} else {
-		SendHead(file_name, fd);
-		printf("%s\n", file_name.c_str());
-		SendFileSize(file_name, fd);
-		SendFile(file_name, fd);
+        string send_file = file_name;
+        string file_end = FileEnd(file_name);
+        if (file_end == "php") {
+            char new_name[20];
+            snprintf(new_name, sizeof(new_name), "%lu.html", time(0));
+            send_file = http_config_.CGI() + http_config_.Tmp() + new_name;
+            printf("cgi out: %s\n", send_file.c_str());
+            CGI::GenerateSendFile(file_name, send_file);
+        }
+		SendHead(send_file, fd);
+        
+		printf("%s\n", send_file.c_str());
+		SendFileSize(send_file, fd);
+		SendFile(send_file, fd);
+        if (file_end == "php") {
+            CGI::SafeRemoveFile(send_file);
+        }
 	}
 }
 void Response::SendFile(const string &file_name, int fd)

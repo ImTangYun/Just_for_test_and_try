@@ -8,6 +8,7 @@
 #define SRC_RESPONSE_H_
 #include <string>
 #include "http_conf.h"
+#include "cgi.h"
 namespace http
 {
 using std::string;
