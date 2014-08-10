@@ -59,7 +59,9 @@ void Communicate::EventLoop()
 		int event_num = event_poller_->PollEvent(500,
 				io_event, listen_->GetFd());
 		for (int i = 0; i < event_num; ++i) {
+
 			if (io_event[i].socket_content_->GetFd() == listen_->GetFd()) {
+
                 int connfd = accept(listen_->GetFd(), NULL, NULL);
                 int* connfd_to_push =  new int(connfd);
                 printf("new connected %d\n", connfd);
