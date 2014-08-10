@@ -68,6 +68,14 @@ void Communicate::EventLoop()
                 TaskNode node;
                 node.data_ = (void*)connfd_to_push;
                 taskqueue_->Push(node);
+				//int connfd = accept(listen_->GetFd(), NULL, NULL); 
+				//int* connfd_to_push =  new int(connfd);
+				//printf("new connected %d\n", connfd);
+				//TaskNode node;
+				//node.data_ = (void*)connfd_to_push;
+				//taskqueue_->Push(node);
+				// 
+				//
 				// Socket* socket = new Socket;
 				// socket->SetFd(connfd);
 				// SocketContent* socket_content = new SocketContent(socket);
