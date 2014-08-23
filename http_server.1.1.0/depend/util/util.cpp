@@ -5,6 +5,7 @@
  */
 #include <unistd.h>
 #include <socket.h>
+#include <signal.h>
 #include "util.h"
 namespace myspace
 {
@@ -33,6 +34,7 @@ bool Util::SafeSendFile(char* buff, int length, int fd)
 {
 	int left = length;
 	int total = 0;
+    signal( SIGPIPE, SIG_IGN );
 	while (total < length) {
 		int n = send(fd, buff + total, left, 0);
 		if (n < 0)
