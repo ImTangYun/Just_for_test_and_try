@@ -17,16 +17,16 @@ namespace http
 using myspace::Util;
 void Response::DealWithRequest(char* data, int length, int fd)
 {
-	char buff[100];
-	snprintf(buff, sizeof(buff), "no file");
-	string file_name = http_config_.CGI();
-	file_name += RequestFeile(data, length);
-	printf("request file: %s\n", file_name.c_str());
-	if (!Util::HasFile(file_name)) {
-		SendHead(http_config_.CGI() + "./default.html", fd);
-		SendFileSize(http_config_.CGI() + "./default.html", fd);
-		SendFile(http_config_.CGI() + "./default.html", fd);
-	} else {
+    char buff[100];
+    snprintf(buff, sizeof(buff), "no file");
+    string file_name = http_config_.CGI();
+    file_name += RequestFeile(data, length);
+    printf("request file: %s\n", file_name.c_str());
+    if (!Util::HasFile(file_name)) {
+        SendHead(http_config_.CGI() + "./default.html", fd);
+        SendFileSize(http_config_.CGI() + "./default.html", fd);
+        SendFile(http_config_.CGI() + "./default.html", fd);
+    } else {
         string send_file = file_name;
         string file_end = FileEnd(file_name);
         if (file_end == "php") {
@@ -36,15 +36,15 @@ void Response::DealWithRequest(char* data, int length, int fd)
             printf("cgi out: %s\n", send_file.c_str());
             CGI::GenerateSendFile(file_name, send_file);
         }
-		SendHead(send_file, fd);
-        
-		printf("%s\n", send_file.c_str());
-		SendFileSize(send_file, fd);
-		SendFile(send_file, fd);
+        SendHead(send_file, fd);
+
+        printf("%s\n", send_file.c_str());
+        SendFileSize(send_file, fd);
+        SendFile(send_file, fd);
         if (file_end == "php") {
             CGI::SafeRemoveFile(send_file);
         }
-	}
+    }
 }
 void Response::SendFile(const string &file_name, int fd)
 {
