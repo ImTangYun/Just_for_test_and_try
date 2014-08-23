@@ -14,13 +14,7 @@ int main()
 {
     HttpServer http_server;
     http_server.StartServer();
-
-	// HttpConfig http_config;
-	// HttpSocketHandler* listen_handler = new HttpSocketHandler(http_config.Port());
-	// Communicate* communicate = new Communicate(listen_handler);
-	// communicate->Start();
-
-	while (true) sleep(10);
-	return 0;
+    while (true) sleep(10);
+    return 0;
 }
 

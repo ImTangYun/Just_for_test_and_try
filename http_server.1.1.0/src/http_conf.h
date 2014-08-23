@@ -15,37 +15,37 @@ using myspace::Config;
 class FTypeConfig
 {
 public:
-	FTypeConfig(const string &path, char mode);
-	~FTypeConfig();
-	bool ExistType(const string& file_type);
-	string GetType(const string& file_type);
-	bool Init();
+    FTypeConfig(const string &path, char mode);
+    ~FTypeConfig();
+    bool ExistType(const string& file_type);
+    string GetType(const string& file_type);
+    bool Init();
 private:
-	Config ftype_config_;
+    Config ftype_config_;
 };
 class HttpConfig
 {
 public:
-	HttpConfig();
-	~HttpConfig();
-	string CGI()
-	{
-		return http_config_.GetString("cgi");
-	}
-	int Thread_num()
-	{
-		return http_config_.GetInt("thread_num");
-	}
-	string Tmp()
-	{
-		return http_config_.GetString("tmp");
-	}
-	int Port()
-	{
-		return http_config_.GetInt("PORT");
-	}
+    HttpConfig();
+    ~HttpConfig();
+    string CGI()
+    {
+        return http_config_.GetString("cgi");
+    }
+    int Thread_num()
+    {
+        return http_config_.GetInt("thread_num");
+    }
+    string Tmp()
+    {
+        return http_config_.GetString("tmp");
+    }
+    int Port()
+    {
+        return http_config_.GetInt("PORT");
+    }
 private:
-	Config http_config_;
+    Config http_config_;
 };
 }
 #endif // SRC_CONF_H_

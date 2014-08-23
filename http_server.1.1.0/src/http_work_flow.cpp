@@ -36,11 +36,8 @@ void HttpWorkFlow::Response(TaskNode task)
     }   
     buff[length] = '\0';
     printf("%s\n", buff);
-    // close(connfd);
     resp_.DealWithRequest(buff, length, connfd);
     delete buff;
     close(connfd);
-    /*
-    */
 }
 } // namespace http
