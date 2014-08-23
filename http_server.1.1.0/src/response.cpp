@@ -79,11 +79,11 @@ string Response::RequestFeile(char* data, int length)
 	buf[1] = '/';
 	if (sscanf(data, "%s /%s", request, buf + 2) != 2) {
 		printf("error in response.cpp-> Response->RequestFeile()\n");
-		exit(1);
+        return "default.html";
 	}
 	if (string(request) != string("GET")) {
 		printf("error in response.cpp-> Response->RequestFeile()\n");
-		exit(1);
+        return "default.html";
 	}
 
 	return buf;
