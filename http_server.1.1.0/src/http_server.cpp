@@ -5,14 +5,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "http_server.h"
+#include "http_socket_handler.h"
 
 namespace http
 {
+
+using http::HttpSocketHandler;
+
 HttpServer::HttpServer()
+{
+}
+
+void HttpServer::Init()
 {
     http_config_ = new HttpConfig;
     listen_handler_ = new HttpSocketHandler(http_config_->Port());
-    communicate_ = new myspace::Communicate(listen_handler_);
+    communicate_ = new Communicate(listen_handler_);
     taskqueue_ = new TaskQueue<TaskNode>(100);
     communicate_->Init(taskqueue_);
     printf("after communicate_->Init(taskqueue_)\n");
@@ -31,6 +39,7 @@ HttpServer::HttpServer()
         exit(1);
     }
 }
+
 HttpServer::~HttpServer()
 {
     if (listen_handler_)
@@ -42,6 +51,7 @@ HttpServer::~HttpServer()
     if (http_work_flow_)
         delete http_work_flow_;
 }
+
 void HttpServer::StartServer()
 {
     communicate_->Start();

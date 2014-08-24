@@ -12,9 +12,12 @@
 #include <stdlib.h>
 #include "response.h"
 #include "util.h"
+
 namespace http
 {
+
 using myspace::Util;
+
 void Response::DealWithRequest(char* data, int length, int fd)
 {
     char buff[100];
@@ -46,6 +49,7 @@ void Response::DealWithRequest(char* data, int length, int fd)
         }
     }
 }
+
 void Response::SendFile(const string &file_name, int fd)
 {
     char buff[10000];
@@ -58,6 +62,7 @@ void Response::SendFile(const string &file_name, int fd)
     }
     close(f);
 }
+
 string Response::FileEnd(const string &file_name)
 {
     if (file_name == "") return ""; 
@@ -71,6 +76,7 @@ string Response::FileEnd(const string &file_name)
     printf("filename:%sfiletype:%s\n", file_name.c_str(), ret.c_str());
     return ret;
 }
+
 string Response::RequestFeile(char* data, int length)
 {
     char buf[1000];
@@ -88,6 +94,7 @@ string Response::RequestFeile(char* data, int length)
 
     return buf;
 }
+
 void Response::SendHead(const string &file_name, int fd)
 {
     char buff[1000];
@@ -99,6 +106,7 @@ void Response::SendHead(const string &file_name, int fd)
     Util::SafeSendFile(buff, len, fd);
     printf("test:\n%s\n", buff);
 }
+
 string Response::GetType(const string &type)
 {
     return ftype_.GetType(type);

@@ -1,6 +1,6 @@
 <html>
 
-<body background="12.gif" style="background-repeat:no-repeat;">
+<body background="12.jpg" style="background-repeat:no-repeat;">
 
 <h3 style="font:48px bolder '微软雅黑'; text-align:center;" >This is the index page of the http server</h3>
 

@@ -1,17 +1,20 @@
 //
 // by:yuntang
-//file : http_work_flow.h
+// file : http_work_flow.h
 //
 #ifndef SRC_HTTP_WORK_FLOW_H_
 #define SRC_HTTP_WORK_FLOW_H_
 #include "taskqueue.h"
 #include "Work_flow.h"
 #include "response.h"
+
 namespace http
 {
+
 using myspace::TaskNode;
 using myspace::TaskQueue;
 using cthread::WorkFlow;
+
 class HttpWorkFlow: public WorkFlow
 {
 public:

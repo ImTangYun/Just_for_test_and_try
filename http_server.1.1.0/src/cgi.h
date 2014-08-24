@@ -8,10 +8,13 @@
 #include <stdio.h>
 #include <string>
 #include "util.h"
+
 namespace http
 {
+
 using std::string;
 using myspace::Util;
+
 class CGI
 {
 public:

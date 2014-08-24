@@ -3,11 +3,11 @@
 // file: http_work_flow.cpp
 //
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "http_work_flow.h"
+
 namespace http
 {
 HttpWorkFlow::HttpWorkFlow(TaskQueue<TaskNode>* taskqueue):taskqueue_(taskqueue)

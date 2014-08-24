@@ -5,16 +5,19 @@
 #include "taskqueue.h"
 #include "http_conf.h"
 #include "communicate.h"
-#include "http_socket_handler.h"
 namespace http
 {
-using http::HttpSocketHandler;
+
+class HttpSocketHandler;
+class HttpConfig;
+
 using myspace::Communicate;
-using http::HttpConfig;
+
 class HttpServer
 {
 public:
     HttpServer();
+    void Init();
     ~HttpServer();
     void StartServer();
 private:
