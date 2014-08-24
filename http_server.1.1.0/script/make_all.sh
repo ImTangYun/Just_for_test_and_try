@@ -9,6 +9,11 @@ cp ../epoll/* ./
 make
 make install
 
+cd ../util
+make clean
+make
+make install
+
 cd ../../src
 make clean
 make
