@@ -23,9 +23,10 @@ enum EventCode
 struct IoEvent
 {
 	int fd_;
-	SocketContent* socket_content_ = NULL;
-	EventCode mask_ = OtherThing;
+	SocketContent* socket_content_;
+	EventCode mask_;
 	int event_code_;
+    IoEvent():socket_content_(NULL), mask_(OtherThing){}
 };
 class EventPoller
 {

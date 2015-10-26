@@ -5,7 +5,7 @@ PREFIX := ../../
 INCS := $(PREFIX) $(PREFIX)/extern_include
 USER_MARCOS := _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE
 
-CPPFLAGS := -Wall -Werror -g -fPIC -std=c++11
+CPPFLAGS := -Wall -Werror -g -fPIC -std=c++0x
 CC = g++
 
 INSTALL_LIB := $(PREFIX)/extern_lib

@@ -2,7 +2,7 @@ PREFIX := ../../
 LIB :=  -lpthread
 INCS := $(PREFIX)extern_include
 
-CPPFLAGS := -Wall -Werror -g -fPIC -std=c++11
+CPPFLAGS := -Wall -Werror -g -fPIC -std=c++0x
 CC = g++
 
 install:

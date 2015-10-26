@@ -68,7 +68,7 @@ template<typename T>
 T TaskQueue<T>::Pop()
 {
     bool success = false;
-    printf("taskqueue size: %lu\n", data_queue_.size());
+    printf("taskqueue size: %d\n", data_queue_.size());
     while (true) {
         pthread_mutex_lock(&lock_);
         T tmp; 
