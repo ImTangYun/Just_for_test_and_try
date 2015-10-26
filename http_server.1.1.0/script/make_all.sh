@@ -1,4 +1,6 @@
 #!/bin/sh
+mkdir ../extern_lib
+
 cd ../depend/epoll
 cd ../makedir
 #./link.sh
