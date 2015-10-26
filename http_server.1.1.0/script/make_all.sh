@@ -5,11 +5,18 @@ cd ../makedir
 cp ../thread/* ./                                                                                                 
 make clean
 make
+make install
+
 cp ../epoll/* ./
 make
 make install
 
 cd ../util
+make clean
+make
+make install
+
+cd ../config
 make clean
 make
 make install
