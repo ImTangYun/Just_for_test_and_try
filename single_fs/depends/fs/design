@@ -1,0 +1,13 @@
+api:
+
+// write data of buffer into system
+int write(char* buffer, int length)
+//  write data of file_name into system
+int write(char* file_name)
+
+// int write(string file_name)
+
+// get the file length of file of file_id
+int get_file_length(int file_id)
+
+int read(int file_id, char* buffer, int &length)
