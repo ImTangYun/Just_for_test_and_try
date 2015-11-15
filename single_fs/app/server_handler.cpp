@@ -14,7 +14,6 @@
 int ServerHandler::OnReceived(Packet* packet)
 {
     return EchoFromIfs(packet);
-    // return EchoFromFs(packet);
 }
 int ServerHandler::EchoFromIfs(Packet* packet)
 {
@@ -31,9 +30,6 @@ int ServerHandler::EchoFromIfs(Packet* packet)
             file_id = 10;
         }
         printf("file_id=%lu\n", file_id);
-        // uint32_t length = packet->data_length();
-        // return 0;
-        // data[length] = '\0';
         printf("-------------------from server-----------------------");
         // printf("received: %s, length:%d\n", data, length);
         printf("-------------------from server-----------------------");
@@ -51,10 +47,11 @@ int ServerHandler::EchoFromIfs(Packet* packet)
         StreamSocketContext* socket_context = end_point->socket_context();
         socket_context->AsyncSendPacket(packet);
     } else if (req == 2) {
-        int file_id = inited_ifs->ifs()->write(data, packet->data_length());
+        int file_id = inited_ifs->ifs()->write(data, packet->data_length() - sizeof(int));
         inited_ifs->ifs()->save_metadata();
         char* buf = new char[sizeof(int) + 1];
         ((int*)buf)[0] = htonl(file_id); 
+        printf("data: %s\n", data);
         packet->set_packet(buf, (uint32_t)sizeof(int));
         StreamSocketContext* socket_context = end_point->socket_context();
         socket_context->AsyncSendPacket(packet);

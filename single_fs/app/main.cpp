@@ -10,7 +10,8 @@ int main(int argc, char* argv[])
     if (opt == 2) { // put file
         client->Put(argv[2]);
     } else if (opt == 1) { // get file
-        // client->Get(argv[2], (char**)0, 0);
+        int x;
+        client->Get(argv[2], (char**)0, x);
     }
     return 0;
 }

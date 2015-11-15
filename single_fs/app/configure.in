@@ -15,12 +15,15 @@ CXXFLAGS="-std=c++0x"
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h])
 AC_CHECK_HEADERS([unordered_map])
 AC_CHECK_LIB(pthread, pthread_create)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_TYPE_UINT32_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
 
 # Checks for library functions.
 

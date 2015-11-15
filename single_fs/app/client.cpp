@@ -34,7 +34,9 @@ int Client::Get(char* file_id, char** buf, int &length)
 {
     Packet* packet = new Packet();
     char* data = new char[100];
-    int req = 1; // get request;
+
+    // get request;
+    int req = 1;
     ((int*)data)[0] = htonl(req);
     uint32_t len = snprintf(data + sizeof(int), 100, file_id);
     packet->set_end_point(end_point_);
@@ -72,11 +74,9 @@ int Client::Put(char* path)
     int rlength = FileUtils::read(&data, size, path, sizeof(int));
     printf("rlength=%d size=%d content:%s\n", rlength, size, data);
     data -= sizeof(int);
-    printf("rlength=%d size=%d content:%s\n", rlength, size, data);
     int* p = (int*)data;
     int req = 2; // put requests
     p[0] = htonl(req);
-    data[rlength] = '\0';
     Packet* packet = new Packet();
     packet->set_packet(data, size + sizeof(int));
     void* ret_buf = NULL;
