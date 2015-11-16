@@ -101,9 +101,6 @@ int64_t Ifs::read(uint64_t file_id, char* buffer, int64_t &length)
     }
     ret = fread(buffer, 1, (iter->second)._length, fp);
     printf("read length: %d\n", ret);
-    buffer[(iter->second)._length] = '\0';
-    buffer[(iter->second)._length - 1] = '\n';
-    // snprintf(buffer, (iter->second)._length, "ha aha ah ahana  akjaksjk");
     printf("buffer:%s\n", buffer);
     fclose(fp);
     return ret;

@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-    Client* client = new Client("10.100.125.138:1235");
+    Client* client = new Client("10.100.125.138:443");
     client->Init();
     int opt = atoi(argv[1]);
     if (opt == 2) { // put file

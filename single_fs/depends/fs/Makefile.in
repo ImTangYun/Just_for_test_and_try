@@ -35,7 +35,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
+DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure config.guess \
 	config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -49,14 +49,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
-libnetmachine_a_AR = $(AR) $(ARFLAGS)
-libnetmachine_a_LIBADD =
-am_libnetmachine_a_OBJECTS = listen_handler.$(OBJEXT) \
-	socket_context.$(OBJEXT) cthread.$(OBJEXT) \
-	communicate_loop.$(OBJEXT) net_machine.$(OBJEXT) \
-	cthread_mutex.$(OBJEXT) listen_socket_context.$(OBJEXT) \
-	stream_socket_context.$(OBJEXT)
-libnetmachine_a_OBJECTS = $(am_libnetmachine_a_OBJECTS)
+libifs_a_AR = $(AR) $(ARFLAGS)
+libifs_a_LIBADD =
+am_libifs_a_OBJECTS = ifs.$(OBJEXT) file_utils.$(OBJEXT)
+libifs_a_OBJECTS = $(am_libifs_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -70,8 +66,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libnetmachine_a_SOURCES)
-DIST_SOURCES = $(libnetmachine_a_SOURCES)
+SOURCES = $(libifs_a_SOURCES)
+DIST_SOURCES = $(libifs_a_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -201,8 +197,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-noinst_LIBRARIES = libnetmachine.a
-libnetmachine_a_SOURCES = ./listen_handler.cpp ./socket_context.cpp ./cthread.cpp ./communicate_loop.cpp ./net_machine.cpp ./cthread_mutex.cpp ./listen_socket_context.cpp ./stream_socket_context.cpp
+noinst_LIBRARIES = libifs.a
+libifs_a_SOURCES = ifs.cpp file_utils.cpp
 all: all-am
 
 .SUFFIXES:
@@ -244,10 +240,10 @@ $(am__aclocal_m4_deps):
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libnetmachine.a: $(libnetmachine_a_OBJECTS) $(libnetmachine_a_DEPENDENCIES) 
-	-rm -f libnetmachine.a
-	$(libnetmachine_a_AR) libnetmachine.a $(libnetmachine_a_OBJECTS) $(libnetmachine_a_LIBADD)
-	$(RANLIB) libnetmachine.a
+libifs.a: $(libifs_a_OBJECTS) $(libifs_a_DEPENDENCIES) 
+	-rm -f libifs.a
+	$(libifs_a_AR) libifs.a $(libifs_a_OBJECTS) $(libifs_a_LIBADD)
+	$(RANLIB) libifs.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -255,14 +251,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/communicate_loop.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cthread.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cthread_mutex.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listen_handler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listen_socket_context.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_machine.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socket_context.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stream_socket_context.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file_utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ifs.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -284,118 +274,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
-
-listen_handler.o: ./listen_handler.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT listen_handler.o -MD -MP -MF $(DEPDIR)/listen_handler.Tpo -c -o listen_handler.o `test -f './listen_handler.cpp' || echo '$(srcdir)/'`./listen_handler.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/listen_handler.Tpo $(DEPDIR)/listen_handler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./listen_handler.cpp' object='listen_handler.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o listen_handler.o `test -f './listen_handler.cpp' || echo '$(srcdir)/'`./listen_handler.cpp
-
-listen_handler.obj: ./listen_handler.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT listen_handler.obj -MD -MP -MF $(DEPDIR)/listen_handler.Tpo -c -o listen_handler.obj `if test -f './listen_handler.cpp'; then $(CYGPATH_W) './listen_handler.cpp'; else $(CYGPATH_W) '$(srcdir)/./listen_handler.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/listen_handler.Tpo $(DEPDIR)/listen_handler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./listen_handler.cpp' object='listen_handler.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o listen_handler.obj `if test -f './listen_handler.cpp'; then $(CYGPATH_W) './listen_handler.cpp'; else $(CYGPATH_W) '$(srcdir)/./listen_handler.cpp'; fi`
-
-socket_context.o: ./socket_context.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT socket_context.o -MD -MP -MF $(DEPDIR)/socket_context.Tpo -c -o socket_context.o `test -f './socket_context.cpp' || echo '$(srcdir)/'`./socket_context.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/socket_context.Tpo $(DEPDIR)/socket_context.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./socket_context.cpp' object='socket_context.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o socket_context.o `test -f './socket_context.cpp' || echo '$(srcdir)/'`./socket_context.cpp
-
-socket_context.obj: ./socket_context.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT socket_context.obj -MD -MP -MF $(DEPDIR)/socket_context.Tpo -c -o socket_context.obj `if test -f './socket_context.cpp'; then $(CYGPATH_W) './socket_context.cpp'; else $(CYGPATH_W) '$(srcdir)/./socket_context.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/socket_context.Tpo $(DEPDIR)/socket_context.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./socket_context.cpp' object='socket_context.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o socket_context.obj `if test -f './socket_context.cpp'; then $(CYGPATH_W) './socket_context.cpp'; else $(CYGPATH_W) '$(srcdir)/./socket_context.cpp'; fi`
-
-cthread.o: ./cthread.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cthread.o -MD -MP -MF $(DEPDIR)/cthread.Tpo -c -o cthread.o `test -f './cthread.cpp' || echo '$(srcdir)/'`./cthread.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cthread.Tpo $(DEPDIR)/cthread.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./cthread.cpp' object='cthread.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cthread.o `test -f './cthread.cpp' || echo '$(srcdir)/'`./cthread.cpp
-
-cthread.obj: ./cthread.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cthread.obj -MD -MP -MF $(DEPDIR)/cthread.Tpo -c -o cthread.obj `if test -f './cthread.cpp'; then $(CYGPATH_W) './cthread.cpp'; else $(CYGPATH_W) '$(srcdir)/./cthread.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cthread.Tpo $(DEPDIR)/cthread.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./cthread.cpp' object='cthread.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cthread.obj `if test -f './cthread.cpp'; then $(CYGPATH_W) './cthread.cpp'; else $(CYGPATH_W) '$(srcdir)/./cthread.cpp'; fi`
-
-communicate_loop.o: ./communicate_loop.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT communicate_loop.o -MD -MP -MF $(DEPDIR)/communicate_loop.Tpo -c -o communicate_loop.o `test -f './communicate_loop.cpp' || echo '$(srcdir)/'`./communicate_loop.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/communicate_loop.Tpo $(DEPDIR)/communicate_loop.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./communicate_loop.cpp' object='communicate_loop.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o communicate_loop.o `test -f './communicate_loop.cpp' || echo '$(srcdir)/'`./communicate_loop.cpp
-
-communicate_loop.obj: ./communicate_loop.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT communicate_loop.obj -MD -MP -MF $(DEPDIR)/communicate_loop.Tpo -c -o communicate_loop.obj `if test -f './communicate_loop.cpp'; then $(CYGPATH_W) './communicate_loop.cpp'; else $(CYGPATH_W) '$(srcdir)/./communicate_loop.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/communicate_loop.Tpo $(DEPDIR)/communicate_loop.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./communicate_loop.cpp' object='communicate_loop.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o communicate_loop.obj `if test -f './communicate_loop.cpp'; then $(CYGPATH_W) './communicate_loop.cpp'; else $(CYGPATH_W) '$(srcdir)/./communicate_loop.cpp'; fi`
-
-net_machine.o: ./net_machine.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT net_machine.o -MD -MP -MF $(DEPDIR)/net_machine.Tpo -c -o net_machine.o `test -f './net_machine.cpp' || echo '$(srcdir)/'`./net_machine.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/net_machine.Tpo $(DEPDIR)/net_machine.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./net_machine.cpp' object='net_machine.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o net_machine.o `test -f './net_machine.cpp' || echo '$(srcdir)/'`./net_machine.cpp
-
-net_machine.obj: ./net_machine.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT net_machine.obj -MD -MP -MF $(DEPDIR)/net_machine.Tpo -c -o net_machine.obj `if test -f './net_machine.cpp'; then $(CYGPATH_W) './net_machine.cpp'; else $(CYGPATH_W) '$(srcdir)/./net_machine.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/net_machine.Tpo $(DEPDIR)/net_machine.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./net_machine.cpp' object='net_machine.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o net_machine.obj `if test -f './net_machine.cpp'; then $(CYGPATH_W) './net_machine.cpp'; else $(CYGPATH_W) '$(srcdir)/./net_machine.cpp'; fi`
-
-cthread_mutex.o: ./cthread_mutex.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cthread_mutex.o -MD -MP -MF $(DEPDIR)/cthread_mutex.Tpo -c -o cthread_mutex.o `test -f './cthread_mutex.cpp' || echo '$(srcdir)/'`./cthread_mutex.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cthread_mutex.Tpo $(DEPDIR)/cthread_mutex.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./cthread_mutex.cpp' object='cthread_mutex.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cthread_mutex.o `test -f './cthread_mutex.cpp' || echo '$(srcdir)/'`./cthread_mutex.cpp
-
-cthread_mutex.obj: ./cthread_mutex.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cthread_mutex.obj -MD -MP -MF $(DEPDIR)/cthread_mutex.Tpo -c -o cthread_mutex.obj `if test -f './cthread_mutex.cpp'; then $(CYGPATH_W) './cthread_mutex.cpp'; else $(CYGPATH_W) '$(srcdir)/./cthread_mutex.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cthread_mutex.Tpo $(DEPDIR)/cthread_mutex.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./cthread_mutex.cpp' object='cthread_mutex.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cthread_mutex.obj `if test -f './cthread_mutex.cpp'; then $(CYGPATH_W) './cthread_mutex.cpp'; else $(CYGPATH_W) '$(srcdir)/./cthread_mutex.cpp'; fi`
-
-listen_socket_context.o: ./listen_socket_context.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT listen_socket_context.o -MD -MP -MF $(DEPDIR)/listen_socket_context.Tpo -c -o listen_socket_context.o `test -f './listen_socket_context.cpp' || echo '$(srcdir)/'`./listen_socket_context.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/listen_socket_context.Tpo $(DEPDIR)/listen_socket_context.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./listen_socket_context.cpp' object='listen_socket_context.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o listen_socket_context.o `test -f './listen_socket_context.cpp' || echo '$(srcdir)/'`./listen_socket_context.cpp
-
-listen_socket_context.obj: ./listen_socket_context.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT listen_socket_context.obj -MD -MP -MF $(DEPDIR)/listen_socket_context.Tpo -c -o listen_socket_context.obj `if test -f './listen_socket_context.cpp'; then $(CYGPATH_W) './listen_socket_context.cpp'; else $(CYGPATH_W) '$(srcdir)/./listen_socket_context.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/listen_socket_context.Tpo $(DEPDIR)/listen_socket_context.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./listen_socket_context.cpp' object='listen_socket_context.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o listen_socket_context.obj `if test -f './listen_socket_context.cpp'; then $(CYGPATH_W) './listen_socket_context.cpp'; else $(CYGPATH_W) '$(srcdir)/./listen_socket_context.cpp'; fi`
-
-stream_socket_context.o: ./stream_socket_context.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT stream_socket_context.o -MD -MP -MF $(DEPDIR)/stream_socket_context.Tpo -c -o stream_socket_context.o `test -f './stream_socket_context.cpp' || echo '$(srcdir)/'`./stream_socket_context.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/stream_socket_context.Tpo $(DEPDIR)/stream_socket_context.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./stream_socket_context.cpp' object='stream_socket_context.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o stream_socket_context.o `test -f './stream_socket_context.cpp' || echo '$(srcdir)/'`./stream_socket_context.cpp
-
-stream_socket_context.obj: ./stream_socket_context.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT stream_socket_context.obj -MD -MP -MF $(DEPDIR)/stream_socket_context.Tpo -c -o stream_socket_context.obj `if test -f './stream_socket_context.cpp'; then $(CYGPATH_W) './stream_socket_context.cpp'; else $(CYGPATH_W) '$(srcdir)/./stream_socket_context.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/stream_socket_context.Tpo $(DEPDIR)/stream_socket_context.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='./stream_socket_context.cpp' object='stream_socket_context.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o stream_socket_context.obj `if test -f './stream_socket_context.cpp'; then $(CYGPATH_W) './stream_socket_context.cpp'; else $(CYGPATH_W) '$(srcdir)/./stream_socket_context.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -726,7 +604,6 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am
 
-#SUBDIRS=. app
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
