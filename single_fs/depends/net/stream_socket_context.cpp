@@ -50,7 +50,7 @@ int StreamSocketContext::AsyncSendPacket(Packet* packet)
     communicate_loop_->SetEvent(this, true, true);
     return 0;
 }
-
+/*
 int StreamSocketContext::HandleOutput()
 {
     Packet* packet = packet_queue_->Pop(1000);
@@ -76,10 +76,52 @@ int StreamSocketContext::HandleOutput()
     Send(buff, total_length + 2 * sizeof(uint32_t));
     delete [] buff;
     return 0;
+}*/
+
+int StreamSocketContext::HandleOutput()
+{
+    Packet* packet = packet_queue_->Pop(1000);
+    if (packet == NULL) {
+        return -1;
+    }
+    
+    // send protocool code
+    uint32_t protocool_code = 1;
+    uint32_t net_protocool_code = htonl(protocool_code);
+    Send((char*)(&net_protocool_code), sizeof(net_protocool_code));
+
+    // send whole packet size channel_id/head_length/head_data/data_length/data
+    uint32_t whole_length = sizeof(uint32_t) + sizeof(uint32_t) + 
+        packet->head_length() + sizeof(uint32_t) + packet->data_length();
+    uint32_t net_whole_length = htonl(whole_length);
+    Send((char*)(&net_whole_length), sizeof(net_whole_length));
+    
+    // send channel id
+    uint32_t channel_id = htonl(packet->channel_id());
+    Send((char*)(&channel_id), sizeof(channel_id));
+
+    // send packet head data length
+    uint32_t head_length = htonl(packet->head_length());
+    Send((char*)(&head_length), sizeof(head_length));
+
+    // send head data
+    Send(packet->head_data(), packet->head_length());
+    
+    //send data length
+    uint32_t data_length = htonl(packet->data_length());
+    Send((char*)(&data_length), sizeof(data_length));
+
+    // send packet data
+    Send(packet->data(), packet->data_length());
+    delete packet;
+    return 0;
 }
 
 int StreamSocketContext::Send(char* data, uint32_t length)
 {
+    if (length == 0) {
+        return 0;
+    }
     uint32_t sent_length = 0;
     while (true) {
         int send_buf = length - sent_length;
@@ -95,7 +137,6 @@ int StreamSocketContext::Send(char* data, uint32_t length)
             usleep(10);
             continue;
         }
-        printf("sent length: %u\n", sent_length);
         sent_length += ret;
         if (sent_length == length) {
             return 0;
@@ -105,25 +146,48 @@ int StreamSocketContext::Send(char* data, uint32_t length)
 
 int StreamSocketContext::ParseHeader(uint32_t &total_len)
 {
-    uint32_t head[2];
-    int ret = recv(fd_, head, 2 * sizeof(uint32_t), 0);
+    uint32_t net_protocool;
+    int ret = recv(fd_, &net_protocool, sizeof(uint32_t), 0);
     printf("recv head len = %d\n", ret);
     if (ret <= 0) {
         return -1;
     }
-    uint32_t flag = ntohl(head[0]);
+    uint32_t flag = ntohl(net_protocool);
     if (flag != 1) {
         printf("can not recognize stream\n");
         return -2;
     }
-    total_len = ntohl(head[1]);
+
+    uint32_t* len = (uint32_t*)Recv(sizeof(uint32_t));
+    total_len = ntohl(len[0]);
+    delete [] len;
     return 0;
+}
+
+void* StreamSocketContext::Recv(uint32_t length)
+{
+    char* data = new char[length];
+    uint32_t received = 0;
+    while (true) {
+        int ret = recv(fd_, data + received, length - received, 0);
+        if (ret <= 0) {
+            if (received == length) {
+                return data;
+            }
+            continue;
+        }
+        received += ret;
+        if (received == length) {
+            return data;
+        }
+    }
 }
 
 int StreamSocketContext::HandleInput() {
     uint32_t received_length = 0;
     uint32_t total_length = 0;
     int ret = ParseHeader(total_length);
+    printf("total_length: %u\n", total_length);
     if (ret == -1) {
         printf("disconnected\n");
         return -1;
@@ -143,19 +207,25 @@ int StreamSocketContext::HandleInput() {
     }
     uint32_t* head = reinterpret_cast<uint32_t*>(recv_buffer_);
     uint32_t channel_id = ntohl(head[0]);
-    uint32_t data_length = ntohl(head[1]);
-    char* data = new char[received_length + 2];
-    printf("recevied length = %d\n", received_length);
-    printf("data length = %d\n", data_length);
-    memcpy(data, recv_buffer_ + sizeof(channel_id) +
-            sizeof(data_length), received_length);
-    Packet* packet = new Packet(channel_id);
+
+    uint32_t head_length = ntohl(head[1]);
+
+    char* head_ptr = recv_buffer_ + sizeof(channel_id) + sizeof(head_length);
+    char* head_data = new char[head_length];
+    memcpy(head_data, head_ptr, head_length);
+
+    uint32_t* data_length_ptr = (uint32_t*)(head_ptr + head_length);
+    uint32_t data_length = ntohl(*data_length_ptr);
+
+    char* data_ptr = head_ptr + head_length + sizeof(data_length);
+    char* data = new char[data_length + 5];
+    memcpy(data, data_ptr, data_length);
+
+    Packet* packet = new Packet();
+    packet->set_head(head_data, head_length);
     packet->set_packet(data, data_length);
     packet->set_end_point(end_point_);
-    if (received_length == 0) {
-        printf("disconnected\n");
-        return -1;
-    }
+
     if (need_ack_) {
         *ret_buf_ = (void*)packet;
         replied_ = true;

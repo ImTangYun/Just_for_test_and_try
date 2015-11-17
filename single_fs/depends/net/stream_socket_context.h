@@ -64,6 +64,7 @@ class StreamSocketContext: public SocketContext
             return replied_;
         }
     private:
+        void* Recv(uint32_t length);
         int Send(char* data, uint32_t length);
         TaskQueue<Packet*>* packet_queue_;
         char* recv_buffer_;
