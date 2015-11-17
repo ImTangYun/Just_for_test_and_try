@@ -9,7 +9,6 @@ depcomp
 install-sh
 missing
 tmp
-test/
 *.dat
 *.idx
 core.*
