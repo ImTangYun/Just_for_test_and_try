@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <stdio.h>
+#include "log.h"
 #include "communicate_loop.h"
 
 using namespace cthread;
@@ -44,7 +45,7 @@ void CommunicateLoop::HandleEvent()
     int nfds = epoll_wait(efd_, events, 256, 500);
     for (int i = 0; i < nfds; ++i) {
         if (events[i].events & EPOLLIN) {
-            printf("EPOLLIN\n");
+            WLOG(DEBUG, "EPOLLIN");
             SocketContext* socket_context = (SocketContext*)events[i].data.ptr;
             int ret = socket_context->HandleInput();
 
@@ -56,7 +57,7 @@ void CommunicateLoop::HandleEvent()
                 delete socket_context;
             }
         } else if (events[i].events & EPOLLOUT) {
-            printf("EPOLLOUT\n");
+            WLOG(DEBUG, "EPOLLOUT");
             SocketContext* socket_context = (SocketContext*)events[i].data.ptr;
             socket_context->HandleOutput();
         }

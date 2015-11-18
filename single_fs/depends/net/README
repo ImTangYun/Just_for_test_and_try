@@ -1,0 +1,6 @@
+the format of the protocool:
+
+
+4byte     4byte      4byte     可变         4byte   可变
+||||||||  |||||||||  ||||||||  |||||||...  |||||||  ||||||...
+proto     total_len  head_len  head_data   data_len  data 

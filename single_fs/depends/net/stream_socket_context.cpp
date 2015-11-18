@@ -13,17 +13,18 @@
 #include "packet.h"
 #include "net_handler.h"
 #include "net_machine.h"
+#include "log.h"
 int StreamSocketContext::Init()
 {
     if (ip_ != NULL) {
-        printf("fd: %d had been inited before\n", fd_);
+        WLOG(INFO, "fd: %d had been inited before", fd_);
         return 0;
     }
     if (ParseIpPort() < 0) {
-        printf("parse ip and port failed!\n");
+        WLOG(ERROR, "parse ip and port failed!");
         return -1;
     }
-    printf("parse ip and port over, ip:%s, port:%d\n", ip_, port_);
+    WLOG(DEBUG, "parse ip and port over, ip:%s, port:%d", ip_, port_);
     fd_ = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in servaddr;
     bzero(&servaddr, sizeof(servaddr));
@@ -31,14 +32,14 @@ int StreamSocketContext::Init()
     servaddr.sin_port = htons(port_);
     inet_pton(AF_INET, ip_, &servaddr.sin_addr);
 
-    printf("connectiong....\n");
+    WLOG(DEBUG, "connectiong....");
     if (connect(fd_, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
         perror("connect error");
         return -1;
     }
     SetNonblocking(fd_);
 
-    printf("return code of AddEvent is %d\n",
+    WLOG(DEBUG, "return code of AddEvent is %d",
             net_machine_->communicate_loop()->AddEvent(this, true, true));
     return 0;
 }
@@ -50,33 +51,6 @@ int StreamSocketContext::AsyncSendPacket(Packet* packet)
     communicate_loop_->SetEvent(this, true, true);
     return 0;
 }
-/*
-int StreamSocketContext::HandleOutput()
-{
-    Packet* packet = packet_queue_->Pop(1000);
-    if (packet == NULL) {
-        return -1;
-    }
-    uint32_t channel_id = htonl(packet->channel_id());
-    uint32_t data_length = htonl(packet->data_length());
-    printf("sending channel_id:%d, data_length:%d\n", channel_id, packet->data_length());
-    char* data = packet->data();
-    uint32_t total_length = sizeof(channel_id) +
-        sizeof(data_length) + packet->data_length();
-    char* buff = new char[2 * sizeof(uint32_t) + sizeof(channel_id) +
-        sizeof(data_length) + packet->data_length() + 1];
-    uint32_t* buff_int = reinterpret_cast<uint32_t*>(buff);
-    buff_int[0] = htonl(1);
-    buff_int[1] = htonl(total_length);
-    buff_int[2] = channel_id;
-    buff_int[3] = data_length;
-    char* buff_data = buff + sizeof(channel_id) + sizeof(data_length) + 2 * sizeof(uint32_t);
-    memcpy(buff_data, data, packet->data_length());
-    delete packet;
-    Send(buff, total_length + 2 * sizeof(uint32_t));
-    delete [] buff;
-    return 0;
-}*/
 
 int StreamSocketContext::HandleOutput()
 {
@@ -90,7 +64,7 @@ int StreamSocketContext::HandleOutput()
     uint32_t net_protocool_code = htonl(protocool_code);
     Send((char*)(&net_protocool_code), sizeof(net_protocool_code));
 
-    // send whole packet size channel_id/head_length/head_data/data_length/data
+    // send whole packet size channel_id-head_length-head_data-data_length-data
     uint32_t whole_length = sizeof(uint32_t) + sizeof(uint32_t) + 
         packet->head_length() + sizeof(uint32_t) + packet->data_length();
     uint32_t net_whole_length = htonl(whole_length);
@@ -130,7 +104,7 @@ int StreamSocketContext::Send(char* data, uint32_t length)
         }
         int32_t ret = send(fd_, data + sent_length, send_buf, 0);
         if (ret < 0) {
-            // printf("sending error!\n");
+            // WLOG(DEBUG, "sending error!");
             if (sent_length == length) {
                 return 0;
             }
@@ -148,17 +122,21 @@ int StreamSocketContext::ParseHeader(uint32_t &total_len)
 {
     uint32_t net_protocool;
     int ret = recv(fd_, &net_protocool, sizeof(uint32_t), 0);
-    printf("recv head len = %d\n", ret);
+    WLOG(DEBUG, "recv head len = %d", ret);
     if (ret <= 0) {
         return -1;
     }
     uint32_t flag = ntohl(net_protocool);
     if (flag != 1) {
-        printf("can not recognize stream\n");
+        WLOG(WARN, "can not recognize stream");
         return -2;
     }
 
     uint32_t* len = (uint32_t*)Recv(sizeof(uint32_t));
+    if (len == NULL) {
+        WLOG(WARN, "recv time out");
+        return -3;
+    }
     total_len = ntohl(len[0]);
     delete [] len;
     return 0;
@@ -168,15 +146,23 @@ void* StreamSocketContext::Recv(uint32_t length)
 {
     char* data = new char[length];
     uint32_t received = 0;
+    uint32_t time = 0;
     while (true) {
         int ret = recv(fd_, data + received, length - received, 0);
         if (ret <= 0) {
             if (received == length) {
                 return data;
             }
+            usleep(10);
+            time += 10;
+            if (time > 1000) {
+                delete [] data;
+                return NULL;
+            }
             continue;
         }
         received += ret;
+        time = 0;
         if (received == length) {
             return data;
         }
@@ -187,17 +173,20 @@ int StreamSocketContext::HandleInput() {
     uint32_t received_length = 0;
     uint32_t total_length = 0;
     int ret = ParseHeader(total_length);
-    printf("total_length: %u\n", total_length);
+    WLOG(DEBUG, "total_length: %u", total_length);
     if (ret == -1) {
-        printf("disconnected\n");
+        WLOG(INFO, "disconnected");
         return -1;
     }
     if (ret < 0) return ret;
-    ReallocBuffer(total_length + 10, 0);
+    if (total_length > recv_buffer_length_)
+        ReallocBuffer(total_length + 10, 0);
+    else if (total_length < recv_buffer_length_ / 3 && total_length > 111)
+        ReallocBuffer(recv_buffer_length_ / 2, 0);
     while (true) {
         int ret = recv(fd_, recv_buffer_ + received_length,
                 recv_buffer_length_ - received_length, 0);
-        // printf("ret=%d\n", ret);
+        // WLOG(DEBUG, "ret=%d", ret);
         if (ret <= 0) {
             if (received_length == total_length) break;
             continue;
@@ -252,6 +241,6 @@ int StreamSocketContext::ReallocBuffer(int new_length, int cp_length)
         delete [] recv_buffer_;
         recv_buffer_ = new_buffer;
         recv_buffer_length_ = new_length;
-        printf("new alloced recv_buffer_length_=%d\n", recv_buffer_length_);
+        WLOG(DEBUG, "new alloced recv_buffer_length_=%d", recv_buffer_length_);
         return 0;
 }

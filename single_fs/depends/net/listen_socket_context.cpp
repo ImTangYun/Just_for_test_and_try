@@ -13,12 +13,13 @@
 #include "communicate_loop.h"
 #include "listen_handler.h"
 #include "end_point.h"
+#include "log.h"
 int ListenSocketContext::Init()
 {
     struct sockaddr_in servaddr; 
 
     if ( (fd_ = socket(AF_INET, SOCK_STREAM, 0)) == -1 ) {
-        printf("create socket error: %s(errno: %d)\n",strerror(errno),errno);
+        WLOG(DEBUG, "create socket error: %s(errno: %d)",strerror(errno),errno);
         exit(0);
     }   
 
@@ -28,24 +29,24 @@ int ListenSocketContext::Init()
     servaddr.sin_port = htons(server_port_);
 
     if ( bind(fd_, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1) {
-        printf("bind socket error: %s(errno: %d)\n",strerror(errno),errno);
+        WLOG(DEBUG, "bind socket error: %s(errno: %d)",strerror(errno),errno);
         exit(0);
     }   
 
     if ( listen(fd_, 10) == -1) {
-        printf("listen socket error: %s(errno: %d)\n",strerror(errno),errno);
+        WLOG(DEBUG, "listen socket error: %s(errno: %d)",strerror(errno),errno);
         exit(0);
     }
     int ret = communicate_loop_->AddEvent(this, true, false);
-    printf("AddEvent ret: %d\n", ret);
+    WLOG(DEBUG, "AddEvent ret: %d", ret);
     return 0;
 }
 int ListenSocketContext::HandleInput()
 {
-    printf("connecting request!\n");
+    WLOG(DEBUG, "connecting request!");
     int connfd = accept(fd_, NULL, NULL);
     if (connfd < 0) {
-        perror("accept error\n");
+        perror("accept error");
         exit(1);
     }
     socklen_t rsa_len = sizeof(struct sockaddr_in);
@@ -57,7 +58,7 @@ int ListenSocketContext::HandleInput()
         ip = inet_ntoa(rsa.sin_addr);
         port = ntohs(rsa.sin_port);
     }
-    printf("client ip:%s, port:%d fd:%d\n", ip, port, connfd);
+    WLOG(DEBUG, "client ip:%s, port:%d fd:%d", ip, port, connfd);
     SetNonblocking(connfd);
     char ip_port[30];
     snprintf(ip_port, 30, "%s:%d", ip, port);

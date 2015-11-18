@@ -45,7 +45,6 @@ then
     libtoolize --automake
     automake --add-missing
     ./configure
-    make clean
     make
 fi
 

@@ -17,7 +17,7 @@ class ClientHandler: public StreamHandler
             uint32_t length = packet->data_length();
             // data[length] = '\0';
             printf("----------------from client handler---------------------\n");
-            printf("received: %s\n", data);
+//            printf("received: %s\n", data);
             printf("----------------from client handler---------------------\n");
             // StreamSocketContext* socket_context = packet->end_point()->socket_context();
             // data[length] = ' ';

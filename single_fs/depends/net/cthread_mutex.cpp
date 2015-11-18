@@ -3,6 +3,7 @@
 //
 //
 #include "cthread_mutex.h"
+#include "log.h"
 
 CthreadMutex::CthreadMutex()
 {
@@ -14,7 +15,7 @@ CthreadMutex::~CthreadMutex()
 }
 void CthreadMutex::Lock()
 {
-    printf("lock");
+    WLOG(DEBUG, "lock");
     pthread_mutex_lock(&lock_);
 }
 void CthreadMutex::Unlock()

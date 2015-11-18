@@ -59,7 +59,7 @@ int syncclient()
     char* data1 = packet1->data();
     uint32_t length1 = packet1->data_length();
     data1[length1] = '\0';
-    printf("sync received: %s\n", data1);
+    WLOG(DEBUG, "sync received: %s", data1);
     StreamSocketContext* socket_context1 = packet1->end_point()->socket_context();
     data[length] = ' ';
     delete packet1;

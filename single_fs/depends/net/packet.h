@@ -2,7 +2,6 @@
 //
 //
 //
-
 #ifndef PACKET
 #define PACKET
 #include <stdint.h>
@@ -19,6 +18,8 @@ class Packet
         {
             delete [] data_;
             data_ = NULL;
+            delete [] head_data_;
+            head_data_ = NULL;
         }
         void set_head(char* head_data, uint32_t head_length)
         {
