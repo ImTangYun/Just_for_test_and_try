@@ -50,6 +50,7 @@ int ServerHandler::EchoFromIfs(Packet* packet)
         socket_context->AsyncSendPacket(packet);
     } else if (reqest_type == PUT) {
         int file_id = inited_ifs->ifs()->write(data, packet->data_length());
+        WLOG(INFO, "recvd data length is %d", packet->data_length());
         inited_ifs->ifs()->save_metadata();
         char* buf = new char[sizeof(int) + 1];
         ((int*)buf)[0] = htonl(file_id);

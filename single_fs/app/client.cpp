@@ -70,7 +70,7 @@ int Client::Put(char* path)
         return -1;
     }
     int size = 0;
-    if ( ( size = FileUtils::get_file_size(path) ) > 10 * 1024 *1024) {
+    if ( ( size = FileUtils::get_file_size(path) ) > 10 * 1024 *1024 ) {
         WLOG(WARN, "file %s is too big! will ignore", path);
         return -1;
     }
@@ -83,9 +83,10 @@ int Client::Put(char* path)
     head[0] = htonl(reqest_type);
     Packet* packet = new Packet();
     packet->set_head((char*)head, 2 * sizeof(int));
-    packet->set_packet(data, size + sizeof(int));
+    packet->set_packet(data, size);
     void* ret_buf = NULL;
     net_machine_->SyncSendPacket(end_point_, packet, net_handler_, &ret_buf, 0);
+    WLOG(INFO, "send length to put is %d", packet->data_length());
 
     Packet* packet1 = (Packet*)ret_buf;
     int* data1 = (int*)packet1->data();
