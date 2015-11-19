@@ -47,9 +47,20 @@ int Client::Get(char* file_id, char** buf, int &length)
     packet->set_head((char*)head, 2 * sizeof(int));
     packet->set_packet(data, len + sizeof(int));
     void* ret_buf;
-    net_machine_->SyncSendPacket(end_point_, packet, net_handler_, &ret_buf, 0);
+    net_machine_->SyncSendPacket(end_point_, packet, net_handler_,
+            &ret_buf, 0);
 
     Packet* packet1 = (Packet*)ret_buf;
+    head = (int*)packet1->head_data();
+    Response response = (Response)ntohl(head[0]);
+    if ((int)response < 0) {
+        WLOG(ERROR, "get file failed");
+        if (response = FILE_DID_NOT_EXIST) {
+            WLOG(INFO, "file did not exist");
+        }
+        delete packet1;
+        return -1;
+    }
     char* data1 = packet1->data();
     uint32_t length1 = packet1->data_length();
     data1[length1] = '\0';
@@ -85,10 +96,18 @@ int Client::Put(char* path)
     packet->set_head((char*)head, 2 * sizeof(int));
     packet->set_packet(data, size);
     void* ret_buf = NULL;
-    net_machine_->SyncSendPacket(end_point_, packet, net_handler_, &ret_buf, 0);
+    net_machine_->SyncSendPacket(end_point_, packet, net_handler_,
+            &ret_buf, 0);
     WLOG(INFO, "send length to put is %d", packet->data_length());
 
     Packet* packet1 = (Packet*)ret_buf;
+    head = (int*)packet1->head_data();
+    Response response = (Response)ntohl(head[0]);
+    if (response < 0) {
+        WLOG(ERROR, "put file failed");
+        delete [] packet1;
+        return -1;
+    }
     int* data1 = (int*)packet1->data();
     int file_id = ntohl(data1[0]);
     WLOG(DEBUG, "file id: %d", file_id);
