@@ -1,0 +1,10 @@
+AUTOMAKE_OPTIONS= foreign
+#bin_PROGRAMS= server client test cp
+bin_PROGRAMS= test cp scan
+INCLUDES=-I../include/
+#server_SOURCES= server.cpp server_handler.cpp
+LDADD=../lib/libnetmachine.a ../lib/libifs.a ../lib/libutils.a -lssl -lpthread
+#client_SOURCES= main.cpp client.cpp
+test_SOURCES= checksum.cpp test.cpp
+cp_SOURCES= cp.cpp checksum.cpp
+scan_SOURCES= checksum.cpp scan.cpp
