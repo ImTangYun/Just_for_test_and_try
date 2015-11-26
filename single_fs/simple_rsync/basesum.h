@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <string>
 #define schar unsigned char
-using std::list;
 using std::string;
 class Basesum
 {

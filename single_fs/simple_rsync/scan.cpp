@@ -8,7 +8,9 @@
 #include <list>
 #include <string>
 #include "checksum.h"
+#include "checksum1.h"
 #include "file_utils.h"
+#include "common.h"
 #include "log.h"
 
 #define CHUNK_SIZE (1024 * 1024 * 4) // 1kb
@@ -19,7 +21,7 @@ using std::list;
 using std::string;
 
 void scan(char* file_name) {
-    Checksum summer;
+    SUMMER summer;
     int32_t dst_size = FileUtils::get_file_size(file_name);
     int32_t len = CHUNK_SIZE;
     char* buf;

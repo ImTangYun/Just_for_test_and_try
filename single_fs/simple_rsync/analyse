@@ -1,0 +1,15 @@
+#!/bin/sh
+
+opcontrol --init
+opcontrol --vmlinux=/usr/src/linux-3.19.3/vmlinux
+opcontrol --reset
+opcontrol --start
+
+$1
+
+opcontrol --dump
+opcontrol --stop
+opcontrol --shutdown
+opcontrol --deinit
+opannotate --source $1
+opreport -l $1
