@@ -16,6 +16,7 @@
 #include "common.h"
 #include "log.h"
 #include "client.h"
+#include "package.h"
 
 int Client::Init()
 {
@@ -31,90 +32,81 @@ int Client::Init()
     socket_context_->set_end_point(end_point_);
     return 0;
 }
-
-int Client::Get(char* file_id, char** buf, int &length)
+int32_t Client::GetFile(char* src_path, char* dst_path, char* tmp_path)
 {
-    Packet* packet = new Packet();
-    char* data = new char[100];
-
+    list<ChunkInfo*>* meta = GetMeta(src_path);
+    return 0;
+}
+int32_t Client::PutFile(char* src_path, char* dst_path, char* tmp_path)
+{
+    return 0;
+}
+list<ChunkInfo*>* Client::GetMeta(char* path)
+{
+    char* data = new char[1];
     // get request;
-    RequestType reqest_type = GET;
-    int* head = new int[2];
-    head[0] = htonl(reqest_type);
-    ((int*)data)[0] = htonl(reqest_type);
-    uint32_t len = snprintf(data, 100, file_id);
-    packet->set_end_point(end_point_);
-    packet->set_head((char*)head, 2 * sizeof(int));
-    packet->set_packet(data, len + sizeof(int));
+    RequestType reqest_type = GET_META;
+    WLOG(DEBUG, "get meta request");
+    int32_t path_len = strlen(path);
+    int32_t head_length = path_len + sizeof(int32_t) + sizeof(int32_t) + 1;
+    char* head = new char[head_length];
+    Package* package = new Package();
+    package->set_data(head, head_length);
+    package->SetInt32_t(htonl(static_cast<int32_t>(reqest_type)));
+    package->SetInt32_t(htonl(static_cast<int32_t>(path_len)));
+    package->SetString(path, path_len);
+
+    Packet* packet = new Packet();
+    packet->set_head(head, head_length);
+    packet->set_packet(data, 1);
+
     void* ret_buf;
     net_machine_->SyncSendPacket(end_point_, packet, net_handler_,
             &ret_buf, 0);
 
-    Packet* packet1 = (Packet*)ret_buf;
-    head = (int*)packet1->head_data();
-    Response response = (Response)ntohl(head[0]);
-    if ((int)response < 0) {
-        WLOG(ERROR, "get file failed");
-        if (response = FILE_DID_NOT_EXIST) {
+    packet = (Packet*)ret_buf;
+    package->set_data(packet->head_data(), packet->head_length());
+    Response resp = (Response)(ntohl(package->GetInt32_t()));
+    int32_t node_num = ntohl(package->GetInt32_t());
+    if ((int)resp < 0) {
+        WLOG(ERROR, "get file meta failed");
+        if (resp = FILE_DID_NOT_EXIST) {
             WLOG(INFO, "file did not exist");
         }
-        delete packet1;
-        return -1;
+        delete packet;
+        return NULL;
     }
-    char* data1 = packet1->data();
-    uint32_t length1 = packet1->data_length();
-    data1[length1] = '\0';
-    char* path = new char[100];
-    FileUtils file_utils;
-    snprintf(path, 100, "client_data/%s", file_id);
-    WLOG(INFO, "received length: %d", length1);
-    int wlen = file_utils.write(data1, length1, path, true);
-    delete packet1;
-    delete [] path;
-    return 0;
-}
+    list<ChunkInfo*>* meta = new list<ChunkInfo*>();
+    package->set_data(packet->data(), packet->data_length());
+    for (int32_t i = 0; i < node_num; ++i) {
+        ChunkInfo* chunk_info = new ChunkInfo();
+        chunk_info->weak_sum_ = ntohl(package->GetUint32_t());
+        chunk_info->offset_ = ntohl(package->GetInt32_t());
+        chunk_info->length_ = ntohl(package->GetInt32_t());
+        chunk_info->strong_sum_ = package->GetString(32);
+        WLOG(DEBUG, "wkhash: %u, of: %d, len:%d, sthash: %s",
+                chunk_info->weak_sum_, chunk_info->offset_, chunk_info->length_,
+                chunk_info->strong_sum_->c_str());
+        meta->push_back(chunk_info);
+    }
 
-int Client::Put(char* path)
+    delete packet;
+    delete package;
+    return meta;
+}
+list<ChunkInfo*>* ParseMeta(char* buf, int32_t node_num)
 {
-    if (!FileUtils::is_exists_file(path)) {
-        WLOG(WARN, "file %s did not exist!", path);
-        return -1;
-    }
-    int size = 0;
-    if ( ( size = FileUtils::get_file_size(path) ) > 10 * 1024 *1024 ) {
-        WLOG(WARN, "file %s is too big! will ignore", path);
-        return -1;
-    }
-
-    char* data = NULL;
-    int rlength = FileUtils::read(&data, size, path);
-    WLOG(DEBUG, "rlength=%d size=%d content:%s", rlength, size, data);
-    RequestType reqest_type = PUT;
-    int* head = new int[2];
-    head[0] = htonl(reqest_type);
-    Packet* packet = new Packet();
-    packet->set_head((char*)head, 2 * sizeof(int));
-    packet->set_packet(data, size);
-    void* ret_buf = NULL;
-    net_machine_->SyncSendPacket(end_point_, packet, net_handler_,
-            &ret_buf, 0);
-    WLOG(INFO, "send length to put is %d", packet->data_length());
-
-    Packet* packet1 = (Packet*)ret_buf;
-    head = (int*)packet1->head_data();
-    Response response = (Response)ntohl(head[0]);
-    if (response < 0) {
-        WLOG(ERROR, "put file failed");
-        delete [] packet1;
-        return -1;
-    }
-    int* data1 = (int*)packet1->data();
-    int file_id = ntohl(data1[0]);
-    WLOG(DEBUG, "file id: %d", file_id);
-    delete packet1;
+    return NULL;
+}
+int32_t Client::GetChunk(char** buf, int32_t offset, int32_t length)
+{
     return 0;
 }
-int Delete(char* file_id)
+int32_t Client::PutChunk(char* buf, int32_t offset, int32_t length)
+{
+    return 0;
+}
+int32_t Client::CommitFile()
 {
     return 0;
 }

@@ -16,6 +16,8 @@ class FileUtils
         static int32_t write(char* buff, int length, char* file_name, bool cover = false);
 
         static int32_t read(char** buff, int &length, char* file_name, int reserve_size = 0);
+
+        static int32_t read(char** buff, int offset, int &length, char* file_name);
 };
 
 

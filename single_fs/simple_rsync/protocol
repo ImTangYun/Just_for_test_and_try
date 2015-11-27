@@ -1,2 +1,21 @@
 ||||  |||| |||||||||||||||
 type  req   data
+
+
+request of meta data
+HEAD:
+||||||||  ||||||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||
+req type   path_length   path                                                             
+int32_t    int32_t       path_length of chars
+DATA:
+NULL
+
+response of meta req
+HEAD:
+|||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+resp type   node_num                                                                  
+int32_t     int32_t                                                                    
+DATA(repeate of next structure):
+||||||||||||||||||||||||||||||||||||
+wkhash   offset   length   sthash                                                                        
+uint32_t int32_t  int32_t  32 chars

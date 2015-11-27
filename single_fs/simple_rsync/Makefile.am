@@ -8,4 +8,6 @@ LDADD=../lib/libnetmachine.a ../lib/libifs.a ../lib/libutils.a -lssl -lpthread
 test_SOURCES= checksum.cpp test.cpp checksum1.cpp checksum2.cpp
 cp_SOURCES= cp.cpp checksum.cpp checksum1.cpp checksum2.cpp
 scan_SOURCES= checksum.cpp scan.cpp checksum1.cpp checksum2.cpp
-simple_rcync_SOURCES= checksum.cpp main.cpp checksum1.cpp checksum2.cpp rsync_service.cpp server_handler.cpp
+simple_rcync_SOURCES= checksum.cpp main.cpp checksum1.cpp checksum2.cpp \
+					  rsync_service.cpp server_handler.cpp server_processor.cpp \
+					  server.cpp client.cpp

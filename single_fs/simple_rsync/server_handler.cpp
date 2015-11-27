@@ -11,6 +11,10 @@
 #include "singleton.h"
 #include "common.h"
 #include "log.h"
+#include "task_queue.h"
+#include "package.h"
+#include "task_node.h"
+using myspace::TaskQueue;
 int ServerHandler::OnReceived(Packet* packet)
 {
     return EchoFromServer(packet);
@@ -18,7 +22,22 @@ int ServerHandler::OnReceived(Packet* packet)
 int ServerHandler::EchoFromServer(Packet* packet)
 {
     char* head = packet->head_data();
+    for (int32_t i = 0; i < packet->head_length(); ++i) {
+        WLOG(DEBUG, "head[%d]:%c", i, head[i]);
+    }
     uint32_t head_length = packet->head_length();
+    Package* package = new Package();
+    package->set_data(head, head_length);
+    TaskNode* task_node = new TaskNode();
+    task_node->req_ = (RequestType)ntohl(package->GetInt32_t());
+    int32_t path_length = ntohl(package->GetInt32_t());
+    task_node->path_ = package->GetString(path_length);
+    task_node->head_ = package;
+    task_node->packet_ = packet;
+    WLOG(DEBUG, "req  type: %d, path length: %d, path: %s",
+            task_node->req_, path_length, task_node->path_->c_str());
+    task_queue_->Push(task_node);
+    return 0;
 
     RequestType reqest_type = (RequestType)ntohl(((int*)head)[0]);
     WLOG(DEBUG, "head length: %d, reqest_type_: %d", head_length, reqest_type);
@@ -85,5 +104,10 @@ int ServerHandler::OnSent(Packet* packet)
 }
 int ServerHandler::OnTimeOut()
 {
+    return 0;
+}
+int ServerHandler::Init(myspace::TaskQueue<TaskNode*>* task_queue)
+{
+    task_queue_ = task_queue;
     return 0;
 }

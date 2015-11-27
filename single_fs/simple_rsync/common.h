@@ -13,7 +13,8 @@ enum RequestType
 {
     GET_META = 1,
     GET_CHUNK,
-    PUT,
+    PUT_CHUNK,
+    COMMIT
 };
 
 enum Response
@@ -24,8 +25,9 @@ enum Response
 
 struct ChunkInfo
 {
+    uint32_t weak_sum_;
     // true: src, false: dst
-    bool from_;
+    int32_t from_;
     int32_t offset_;
     int32_t length_;
     string* strong_sum_;

@@ -95,7 +95,7 @@ int64_t Ifs::read(uint64_t file_id, char* buffer, int64_t &length)
     }
     int32_t ret = fseek(fp, (iter->second)._start, SEEK_SET);
     printf("meta_node: %s\n", (iter->second).to_string().c_str());
-    if (ret == -1) {
+    if (ret == -2) {
         printf("fseek failed\n");
         return ret;
     }
