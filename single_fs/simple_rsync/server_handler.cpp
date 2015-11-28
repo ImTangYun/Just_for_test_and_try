@@ -22,9 +22,9 @@ int ServerHandler::OnReceived(Packet* packet)
 int ServerHandler::EchoFromServer(Packet* packet)
 {
     char* head = packet->head_data();
-    for (int32_t i = 0; i < packet->head_length(); ++i) {
-        WLOG(DEBUG, "head[%d]:%c", i, head[i]);
-    }
+    // for (int32_t i = 0; i < packet->head_length(); ++i) {
+    //     WLOG(DEBUG, "head[%d]:%c", i, head[i]);
+    // }
     uint32_t head_length = packet->head_length();
     Package* package = new Package();
     package->set_data(head, head_length);

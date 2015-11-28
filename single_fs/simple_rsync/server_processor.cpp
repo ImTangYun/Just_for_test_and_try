@@ -4,6 +4,7 @@
 //
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
 #include "end_point.h"
 #include "stream_socket_context.h"
 #include "task_queue.h"
@@ -15,6 +16,7 @@
 #include "file_utils.h"
 #include "package.h"
 #include "packet.h"
+#include "time_utils.h"
 using myspace::TaskQueue;
 void ServerProcessor::Run(CThread* cthread, void* args)
 {
@@ -37,7 +39,10 @@ void ServerProcessor::Process(int32_t thread_id)
     if (node->req_ == GET_META) {
         GetMeta(node);
     } else if (node->req_ == GET_CHUNK) {
+        TimeCounter time_counter;
         GetChunk(node);
+        time_counter.AddNow();
+        WLOG(NOTICE, "GetChunk cost %fms", time_counter.GetTimeCosts(1));
     }
 }
 void ServerProcessor::Init(int32_t thread_num, TaskQueue<TaskNode*>* task_queue)
@@ -113,6 +118,56 @@ void ServerProcessor::GetMeta(TaskNode* node)
 }
 void ServerProcessor::GetChunk(TaskNode* node)
 {
+    WLOG(DEBUG, "getting chunk request");
+    Packet* packet = node->packet_;
+    Package* package = new Package();
+    EndPoint* end_point = packet->end_point();
+    char* head = NULL;
+    if (!FileUtils::is_exists_file(node->path_->c_str())) {
+        WLOG(WARN, "file %s did not exist", node->path_->c_str());
+        head = new char[sizeof(uint32_t) + 1];
+        package->set_data(head, sizeof(uint32_t) + 1);
+        package->SetUint32_t(htonl(static_cast<uint32_t>(FILE_DID_NOT_EXIST)));
+        delete [] packet->data();
+        delete [] packet->head_data();
+        delete node->head_;
+        delete node->path_;
+        delete node;
+        packet->set_head(head, sizeof(uint32_t));
+        packet->set_packet(new char[1], 1);
+        StreamSocketContext* socket_context = end_point->socket_context();
+        socket_context->AsyncSendPacket(packet);
+        return;
+    }
+    int32_t chunk_offset = ntohl(node->head_->GetInt32_t());
+    int32_t chunk_length = ntohl(node->head_->GetInt32_t());
+
+    WLOG(DEBUG, "get chunk, path: %s, offset: %d, length:%d",
+            node->path_->c_str(), chunk_offset, chunk_length);
+    char* buf;
+    rsync_service_->GetChunk((char*)node->path_->c_str(),
+            &buf, chunk_offset, chunk_length);
+
+    int32_t head_length = sizeof(int32_t) * 3 + 1;
+    head = new char[head_length + 2];
+    package->set_data(head, head_length);
+
+    // response type
+    package->SetInt32_t(htonl(static_cast<int32_t>(OK)));
+
+    list<ChunkInfo*>* meta = rsync_service_->GenerateMetaList(node->path_->c_str());
+
+    delete [] node->packet_->data();
+    delete [] node->packet_->head_data();
+    delete node->head_;
+    delete node->path_;
+    delete node;
+    packet->set_head(head, head_length);
+
+    packet->set_packet(buf, chunk_length);
+    StreamSocketContext* socket_context = end_point->socket_context();
+    delete package;
+    socket_context->AsyncSendPacket(packet);
 }
 void ServerProcessor::Start()
 {

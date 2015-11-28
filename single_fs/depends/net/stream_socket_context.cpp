@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/epoll.h>
+#include <time.h>
 #include <errno.h>
 #include <stdio.h>
 #include <arpa/inet.h>
@@ -58,6 +59,8 @@ int StreamSocketContext::HandleOutput()
     if (packet == NULL) {
         return -1;
     }
+
+    WLOG(DEBUG, "the fd of the connection is %d", fd_);
     
     // send protocool code
     uint32_t protocool_code = 1;
@@ -183,6 +186,9 @@ int StreamSocketContext::HandleInput() {
         ReallocBuffer(total_length + 10, 0);
     else if (total_length < recv_buffer_length_ / 3 && total_length > 111)
         ReallocBuffer(recv_buffer_length_ / 2, 0);
+
+    clock_t start, finish;
+    start = clock();
     while (true) {
         int ret = recv(fd_, recv_buffer_ + received_length,
                 recv_buffer_length_ - received_length, 0);
@@ -194,6 +200,9 @@ int StreamSocketContext::HandleInput() {
         received_length += ret;
         // AdjustBuffer(received_length);
     }
+    finish = clock();
+    WLOG(NOTICE, "recv data cost %fs ", (double)(finish - start) / CLOCKS_PER_SEC);
+
     uint32_t* head = reinterpret_cast<uint32_t*>(recv_buffer_);
     uint32_t channel_id = ntohl(head[0]);
 

@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include "log.h"
 #include "communicate_loop.h"
 
@@ -59,7 +60,16 @@ void CommunicateLoop::HandleEvent()
         } else if (events[i].events & EPOLLOUT) {
             WLOG(DEBUG, "EPOLLOUT");
             SocketContext* socket_context = (SocketContext*)events[i].data.ptr;
+            struct timeval starttime,endtime;
+            gettimeofday(&starttime,0);
+
             socket_context->HandleOutput();
+
+            gettimeofday(&endtime,0);
+            double timeuse = 1000000*(endtime.tv_sec - starttime.tv_sec)
+                + endtime.tv_usec - starttime.tv_usec;
+            timeuse /=1000;
+            WLOG(DEBUG, "handle out put cost %fms", timeuse);
         }
     }
 }

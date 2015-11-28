@@ -50,7 +50,7 @@ void RsyncService::GetChunk(char* path, char** buf, int offset, int length)
 {
     FileUtils::read(buf, offset, length, path);
 }
-void RsyncService::ScanLocalFile(list<ChunkInfo*>* meta, char* dst_file)
+void RsyncService::ScanFile(list<ChunkInfo*>* meta, char* dst_file)
 {
     SUMMER summer;
     unordered_map<uint32_t, ChunkInfo*> sum_offset;
@@ -58,7 +58,7 @@ void RsyncService::ScanLocalFile(list<ChunkInfo*>* meta, char* dst_file)
     memset(map, 0, sizeof(map));
     for (auto iter = meta->begin(); iter != meta->end(); ++iter) {
         ChunkInfo* chunk_info = *(iter);
-        map[chunk_info->weak_sum_ % 4096];
+        map[chunk_info->weak_sum_ % 4096] = 1;
         sum_offset[chunk_info->weak_sum_] = chunk_info;
     }
     int32_t dst_size = FileUtils::get_file_size(dst_file);

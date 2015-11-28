@@ -17,6 +17,7 @@
 #include "log.h"
 #include "client.h"
 #include "package.h"
+#include "rsync_service.h"
 
 int Client::Init()
 {
@@ -30,13 +31,40 @@ int Client::Init()
 
     end_point_ = new EndPoint(socket_context_);
     socket_context_->set_end_point(end_point_);
+
+    rsync_service_ = new RsyncService();
     return 0;
 }
 int32_t Client::GetFile(char* src_path, char* dst_path, char* tmp_path)
 {
     list<ChunkInfo*>* meta = GetMeta(src_path);
+    if (FileUtils::is_exists_file(dst_path)
+            || (FileUtils::get_file_size(dst_path) > 0)) {
+        rsync_service_->ScanFile(meta, dst_path);
+    }
+    ConstructFile(src_path, dst_path, meta, tmp_path);
     return 0;
 }
+void Client::ConstructFile(char* src_file, char* dst_file,
+        list<ChunkInfo*>* file_meta, char* cst_file)
+{
+    FILE* fp = fopen(cst_file, "w");
+    char* buf = NULL;
+    for (auto iter = file_meta->begin(); iter != file_meta->end(); ++iter) {
+        ChunkInfo* chunk_info = *iter;
+        if (chunk_info->from_ == true) {
+            WLOG(INFO, "from src file");
+            GetChunk(&buf, chunk_info->offset_, chunk_info->length_, src_file);
+            continue;
+        } else {
+            WLOG(INFO, "from dst file");
+            FileUtils::read(&buf, chunk_info->offset_, chunk_info->length_, dst_file);
+        }
+        fwrite(buf, 1, chunk_info->length_, fp);
+        delete [] buf;
+    }
+}
+
 int32_t Client::PutFile(char* src_path, char* dst_path, char* tmp_path)
 {
     return 0;
@@ -84,6 +112,7 @@ list<ChunkInfo*>* Client::GetMeta(char* path)
         chunk_info->offset_ = ntohl(package->GetInt32_t());
         chunk_info->length_ = ntohl(package->GetInt32_t());
         chunk_info->strong_sum_ = package->GetString(32);
+        chunk_info->from_ = true;
         WLOG(DEBUG, "wkhash: %u, of: %d, len:%d, sthash: %s",
                 chunk_info->weak_sum_, chunk_info->offset_, chunk_info->length_,
                 chunk_info->strong_sum_->c_str());
@@ -98,8 +127,48 @@ list<ChunkInfo*>* ParseMeta(char* buf, int32_t node_num)
 {
     return NULL;
 }
-int32_t Client::GetChunk(char** buf, int32_t offset, int32_t length)
+int32_t Client::GetChunk(char** buf, int32_t offset, int32_t length, char* path)
 {
+    char* data = new char[1];
+    // get request;
+    RequestType reqest_type = GET_CHUNK;
+    WLOG(DEBUG, "get meta request");
+    int32_t path_len = strlen(path);
+    int32_t head_length = path_len + sizeof(int32_t) * 4 + 1;
+    char* head = new char[head_length];
+    Package* package = new Package();
+    package->set_data(head, head_length);
+    package->SetInt32_t(htonl(static_cast<int32_t>(reqest_type)));
+    package->SetInt32_t(htonl(static_cast<int32_t>(path_len)));
+    package->SetString(path, path_len);
+    package->SetInt32_t(htonl(static_cast<int32_t>(offset)));
+    package->SetInt32_t(htonl(static_cast<int32_t>(length)));
+
+    Packet* packet = new Packet();
+    packet->set_head(head, head_length);
+    packet->set_packet(data, 1);
+
+    void* ret_buf;
+    net_machine_->SyncSendPacket(end_point_, packet, net_handler_,
+            &ret_buf, 0);
+
+    packet = (Packet*)ret_buf;
+    package->set_data(packet->head_data(), packet->head_length());
+    Response resp = (Response)(ntohl(package->GetInt32_t()));
+    if ((int)resp < 0) {
+        WLOG(ERROR, "get file meta failed");
+        if (resp = FILE_DID_NOT_EXIST) {
+            WLOG(INFO, "file did not exist");
+        }
+        delete packet;
+        return NULL;
+    }
+
+    *buf = packet->data();
+    packet->set_packet(NULL, 0);
+    delete packet;
+    delete package;
+    WLOG(DEBUG, "get chunk success!");
     return 0;
 }
 int32_t Client::PutChunk(char* buf, int32_t offset, int32_t length)
@@ -109,4 +178,11 @@ int32_t Client::PutChunk(char* buf, int32_t offset, int32_t length)
 int32_t Client::CommitFile()
 {
     return 0;
+}
+Client::~Client()
+{
+    delete net_handler_;
+    delete socket_context_;
+    delete end_point_;
+    delete rsync_service_;
 }

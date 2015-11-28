@@ -28,9 +28,8 @@ int NetMachine::AsyncSendPacket(const string &ip_port,
     StreamSocketContext* stream_socket_context = new
         StreamSocketContext(ip_port, communicate_loop_, net_handler);
 
-    WLOG(DEBUG, "ptr of communicate_loop_ in NetMachine is: %p", communicate_loop_);
     stream_socket_context->Init();
-    WLOG(DEBUG, "stream_socket_context init success!");
+    WLOG(DEBUG, "async sending data");
     communicate_loop_->Start();
     for (int i = 0; i < 3; ++i) {
         stream_socket_context->AsyncSendPacket(packet);
@@ -41,7 +40,7 @@ int NetMachine::AsyncSendPacket(const string &ip_port,
 int NetMachine::AsyncSendPacket(EndPoint* end_point,
         Packet* packet, NetHandler* net_handler)
 {
-    WLOG(DEBUG, "stream_socket_context init success!");
+    WLOG(DEBUG, "async sending data");
     communicate_loop_->Start();
     end_point->socket_context()->set_communicate_loop(communicate_loop_);
     end_point->socket_context()->AsyncSendPacket(packet);
@@ -50,13 +49,13 @@ int NetMachine::AsyncSendPacket(EndPoint* end_point,
 int NetMachine::SyncSendPacket(EndPoint* end_point, Packet* packet,
         NetHandler* net_handler, void** ret_buf, int time_out)
 {
-    WLOG(DEBUG, "stream_socket_context init success!");
+    WLOG(DEBUG, "sync sending data");
     communicate_loop_->Start();
     end_point->socket_context()->set_sync(ret_buf);
     end_point->socket_context()->set_communicate_loop(communicate_loop_);
     end_point->socket_context()->AsyncSendPacket(packet);
     while (!end_point->socket_context()->replied()) {
-        usleep(10);
+        usleep(100);
     }
     return 0;
 }
