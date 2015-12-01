@@ -52,24 +52,12 @@ void CommunicateLoop::HandleEvent()
 
             // forign connection is closed, release it;
             if (ret < 0) {
-                ClearEvent(socket_context);
-                close(socket_context->fd());
-                context_list_.remove_node(socket_context->node());
                 delete socket_context;
             }
         } else if (events[i].events & EPOLLOUT) {
             WLOG(DEBUG, "EPOLLOUT");
             SocketContext* socket_context = (SocketContext*)events[i].data.ptr;
-            struct timeval starttime,endtime;
-            gettimeofday(&starttime,0);
-
             socket_context->HandleOutput();
-
-            gettimeofday(&endtime,0);
-            double timeuse = 1000000*(endtime.tv_sec - starttime.tv_sec)
-                + endtime.tv_usec - starttime.tv_usec;
-            timeuse /=1000;
-            WLOG(DEBUG, "handle out put cost %fms", timeuse);
         }
     }
 }
@@ -103,5 +91,8 @@ int CommunicateLoop::SetEvent(SocketContext* socket_context, bool writable, bool
 
 int CommunicateLoop::ClearEvent(SocketContext* socket_context)
 {
-    return epoll_ctl(efd_, EPOLL_CTL_DEL, socket_context->fd(), NULL);
+    int ret = epoll_ctl(efd_, EPOLL_CTL_DEL, socket_context->fd(), NULL);
+    close(socket_context->fd());
+    context_list_.remove_node(socket_context->node());
+    return ret;
 }

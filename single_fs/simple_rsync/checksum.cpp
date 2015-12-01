@@ -39,7 +39,8 @@ uint32_t Checksum::Sum1(char* buf1, int32_t length)
 void Checksum::Init(char* buf, int32_t length)
 {
     length_ = length;
-    if (power_map_ == NULL) {
+    MD4_Init(&ctx_);
+    if (NULL == power_map_) {
         power_map_ = new uint32_t[256];
         uint32_t length_power_prime = 1;
         for (int i = 0; i < length_; ++i) {
@@ -67,9 +68,8 @@ uint32_t Checksum::Update(char next)
 {
     buf_list_.push_back(next);
     tmp_sum_ *= PRIME;
-    tmp_sum_ += static_cast<uint32_t>(static_cast<schar>(next));
+    tmp_sum_ += static_cast<schar>(next);
     tmp_sum_ -= power_map_[static_cast<schar>(buf_list_.front())];
-    // printf(" %u * ( 2 ^ %d) is: %u     ", buf_list_.front(), length_, power_map_[buf_list_.front()]);
     buf_list_.pop_front();
     return tmp_sum_;
 }
@@ -77,7 +77,7 @@ uint32_t Checksum::Update(char next)
 string* Checksum::StrongSum(char* data, int32_t length)
 {
     // MD5_CTX ctx;
-    MD4_CTX ctx;
+    // MD4_CTX ctx;
     unsigned char md[16];
     char buf[33]={'\0'};
     char tmp[3]={'\0'};
@@ -85,9 +85,9 @@ string* Checksum::StrongSum(char* data, int32_t length)
     // MD5_Init(&ctx);
     // MD5_Update(&ctx, data, length);
     // MD5_Final(md,&ctx);
-    MD4_Init(&ctx);
-    MD4_Update(&ctx, data, length);
-    MD4_Final(md,&ctx);
+    // MD4_Init(&ctx);
+    MD4_Update(&ctx_, data, length);
+    MD4_Final(md,&ctx_);
     for ( i=0; i<16; i++ ) {
         sprintf(tmp, "%02X", md[i]);
         strcat(buf, tmp);

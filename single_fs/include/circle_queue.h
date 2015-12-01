@@ -19,6 +19,10 @@ class CircleQueue
         T front();
         void clear();
         void PrintQueue();
+        int32_t size()
+        {
+            return size_;
+        }
         T* GetData();
         ~CircleQueue()
         {

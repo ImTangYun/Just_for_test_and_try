@@ -8,10 +8,10 @@
 #include "task_queue.h"
 #include "socket_context.h"
 #include "end_point.h"
+#include "communicate_loop.h"
 using std::string;
 using myspace::TaskQueue;
 class Packet;
-class CommunicateLoop;
 class NetHandler;
 class NetMachine;
 class StreamSocketContext: public SocketContext
@@ -30,6 +30,7 @@ class StreamSocketContext: public SocketContext
                 net_handler_(net_handler){}
         ~StreamSocketContext()
         {
+            communicate_loop_->ClearEvent(this);
             delete packet_queue_;
             packet_queue_ = NULL;
             delete [] recv_buffer_;

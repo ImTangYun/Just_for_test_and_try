@@ -40,7 +40,7 @@ uint32_t Checksum2::Sum1(char* buf1, int32_t length)
 void Checksum2::Init(char* buf, int32_t length)
 {
     length_ = length;
-    if (power_map_ == NULL) {
+    if (NULL == power_map_) {
         power_map_ = new uint32_t[256];
         uint32_t length_power_prime = 1;
         for (int i = 0; i < length_; ++i) {
@@ -82,18 +82,17 @@ uint32_t Checksum2::Update(char next)
 
 string* Checksum2::StrongSum(char* data, int32_t length)
 {
-    // MD5_CTX ctx;
-    MD4_CTX ctx;
     unsigned char md[16];
     char buf[33]={'\0'};
     char tmp[3]={'\0'};
     int i;
-    // MD5_Init(&ctx);
-    // MD5_Update(&ctx, data, length);
-    // MD5_Final(md,&ctx);
-    MD4_Init(&ctx);
-    MD4_Update(&ctx, data, length);
-    MD4_Final(md,&ctx);
+    MD4_Init(&ctx_);
+    if (data != NULL) {
+        MD4_Update(&ctx_, data, length);
+    } else {
+        MD4_Update(&ctx_, buf_list_.GetData(), buf_list_.size());
+    }
+    MD4_Final(md,&ctx_);
     for ( i=0; i<16; i++ ) {
         sprintf(tmp, "%02X", md[i]);
         strcat(buf, tmp);

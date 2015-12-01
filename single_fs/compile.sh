@@ -9,6 +9,9 @@ cd test/
 cd ../../fs
 ./make -a make && ./make install && ./make -a clean
 
+cd ../../utils 
+./make -a make && ./make install && ./make -a clean
+
 cd ../../app
 
 ./make -a make

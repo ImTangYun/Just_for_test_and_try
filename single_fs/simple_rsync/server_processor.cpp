@@ -118,6 +118,7 @@ void ServerProcessor::GetMeta(TaskNode* node)
 }
 void ServerProcessor::GetChunk(TaskNode* node)
 {
+    TimeCounter time_counter;
     WLOG(DEBUG, "getting chunk request");
     Packet* packet = node->packet_;
     Package* package = new Package();
@@ -145,8 +146,12 @@ void ServerProcessor::GetChunk(TaskNode* node)
     WLOG(DEBUG, "get chunk, path: %s, offset: %d, length:%d",
             node->path_->c_str(), chunk_offset, chunk_length);
     char* buf;
+    time_counter.AddNow();
+    WLOG(DEBUG, "prase head cost %f", time_counter.GetTimeCosts(1));
     rsync_service_->GetChunk((char*)node->path_->c_str(),
             &buf, chunk_offset, chunk_length);
+    time_counter.AddNow();
+    WLOG(DEBUG, "prase head cost and GetCunk from file %f", time_counter.GetTimeCosts(2));
 
     int32_t head_length = sizeof(int32_t) * 3 + 1;
     head = new char[head_length + 2];
@@ -154,8 +159,6 @@ void ServerProcessor::GetChunk(TaskNode* node)
 
     // response type
     package->SetInt32_t(htonl(static_cast<int32_t>(OK)));
-
-    list<ChunkInfo*>* meta = rsync_service_->GenerateMetaList(node->path_->c_str());
 
     delete [] node->packet_->data();
     delete [] node->packet_->head_data();

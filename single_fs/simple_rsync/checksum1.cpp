@@ -39,7 +39,7 @@ uint32_t Checksum1::Sum1(char* buf1, int32_t length)
 void Checksum1::Init(char* buf, int32_t length)
 {
     length_ = length;
-    if (power_map_ == NULL) {
+    if (NULL == power_map_) {
         power_map_ = new uint32_t[256];
         uint32_t length_power_prime = 1;
         for (int i = 0; i < length_; ++i) {

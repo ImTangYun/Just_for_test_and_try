@@ -10,7 +10,6 @@
 #include <string.h>
 #include "task_queue.h"
 #include "stream_socket_context.h"
-#include "communicate_loop.h"
 #include "packet.h"
 #include "net_handler.h"
 #include "net_machine.h"
@@ -158,7 +157,7 @@ void* StreamSocketContext::Recv(uint32_t length)
             }
             usleep(10);
             time += 10;
-            if (time > 1000) {
+            if (time > 1000000) {
                 delete [] data;
                 return NULL;
             }

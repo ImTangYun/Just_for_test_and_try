@@ -18,6 +18,7 @@
 #include "client.h"
 #include "package.h"
 #include "rsync_service.h"
+#include "time_utils.h"
 
 int Client::Init()
 {
@@ -42,7 +43,10 @@ int32_t Client::GetFile(char* src_path, char* dst_path, char* tmp_path)
             || (FileUtils::get_file_size(dst_path) > 0)) {
         rsync_service_->ScanFile(meta, dst_path);
     }
+    TimeCounter time_counter;
     ConstructFile(src_path, dst_path, meta, tmp_path);
+    time_counter.AddNow();
+    WLOG(NOTICE, "construct file costs %.02fms", time_counter.GetTimeCosts(1));
     return 0;
 }
 void Client::ConstructFile(char* src_file, char* dst_file,
@@ -52,10 +56,10 @@ void Client::ConstructFile(char* src_file, char* dst_file,
     char* buf = NULL;
     for (auto iter = file_meta->begin(); iter != file_meta->end(); ++iter) {
         ChunkInfo* chunk_info = *iter;
-        if (chunk_info->from_ == true) {
+        if (true == chunk_info->from_) {
             WLOG(INFO, "from src file");
             GetChunk(&buf, chunk_info->offset_, chunk_info->length_, src_file);
-            continue;
+            WLOG(INFO, "buf ptr :%p, chunk length %d", buf, chunk_info->length_);
         } else {
             WLOG(INFO, "from dst file");
             FileUtils::read(&buf, chunk_info->offset_, chunk_info->length_, dst_file);
@@ -98,7 +102,7 @@ list<ChunkInfo*>* Client::GetMeta(char* path)
     int32_t node_num = ntohl(package->GetInt32_t());
     if ((int)resp < 0) {
         WLOG(ERROR, "get file meta failed");
-        if (resp = FILE_DID_NOT_EXIST) {
+        if (FILE_DID_NOT_EXIST == resp) {
             WLOG(INFO, "file did not exist");
         }
         delete packet;
@@ -157,7 +161,7 @@ int32_t Client::GetChunk(char** buf, int32_t offset, int32_t length, char* path)
     Response resp = (Response)(ntohl(package->GetInt32_t()));
     if ((int)resp < 0) {
         WLOG(ERROR, "get file meta failed");
-        if (resp = FILE_DID_NOT_EXIST) {
+        if (FILE_DID_NOT_EXIST == resp) {
             WLOG(INFO, "file did not exist");
         }
         delete packet;
@@ -183,6 +187,6 @@ Client::~Client()
 {
     delete net_handler_;
     delete socket_context_;
-    delete end_point_;
     delete rsync_service_;
+    delete end_point_;
 }
