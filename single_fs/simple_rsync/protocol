@@ -2,7 +2,7 @@
 type  req   data
 
 
-request of meta data
+1.request of meta data
 HEAD:
 ||||||||  ||||||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||
 req type   path_length   path                                                             
@@ -19,3 +19,19 @@ DATA(repeate of next structure):
 ||||||||||||||||||||||||||||||||||||
 wkhash   offset   length   sthash                                                                        
 uint32_t int32_t  int32_t  32 chars
+
+2.request of chunk
+HEAD:
+||||||||  |||||||||||  ||||||||||||||||||||  |||||||  |||||||||||||||||||
+req type  path_length  path                  offset   length             
+int32_t   int32_t      path_length of chars  int32_t  int32_t
+
+response of get chunk req
+HEAD:
+|||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+resp type                                                                    
+int32_t                                                                         
+DATA:
+||||||||||||||||||||||||||||||||||||
+chunk data                                                                        
+bin data

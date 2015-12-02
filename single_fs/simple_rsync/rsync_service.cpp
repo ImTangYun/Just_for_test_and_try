@@ -10,6 +10,7 @@
 #include "basesum.h"
 #include "checksum2.h"
 #include "log.h"
+#include "file_map.h"
 
 using std::unordered_map;
 
@@ -48,6 +49,9 @@ list<ChunkInfo*>* RsyncService::GenerateMetaList(const char* path)
 }
 void RsyncService::GetChunk(char* path, char** buf, int offset, int length)
 {
+    // char* ptr = file_map_->MapFileContent(offset, length);
+    // *buf = new char[length];
+    // memmove(*buf, ptr, length);
     FileUtils::read(buf, offset, length, path);
 }
 void RsyncService::ScanFile(list<ChunkInfo*>* meta, char* dst_file)
@@ -114,4 +118,76 @@ void RsyncService::ScanFile(list<ChunkInfo*>* meta, char* dst_file)
         delete [] buf;
         total_left -= buf_len;
     }
+}
+
+void RsyncService::ScanFile1(list<ChunkInfo*>* meta, char* dst_file)
+{
+    SUMMER summer;
+    unordered_map<uint32_t, ChunkInfo*> sum_offset;
+    uint32_t map[4096];
+    memset(map, 0, sizeof(map));
+    for (auto iter = meta->begin(); iter != meta->end(); ++iter) {
+        ChunkInfo* chunk_info = *(iter);
+        map[chunk_info->weak_sum_ % 4096] = 1;
+        sum_offset[chunk_info->weak_sum_] = chunk_info;
+    }
+
+
+    int32_t dst_size = FileUtils::get_file_size(dst_file);
+    FileMap* file_map = new FileMap(dst_file);
+    int32_t curr = 0;
+    char* buf = NULL;
+    while (true) {
+        // WLOG(DEBUG, "scanning, curr + CHUNK_SIZE%d, dst_size %d", curr + CHUNK_SIZE, dst_size);
+        if (curr + CHUNK_SIZE > dst_size) break;
+        buf = file_map->MapFileContent(curr, CHUNK_SIZE);
+        summer.Init(buf, CHUNK_SIZE);
+        curr += CHUNK_SIZE;
+        uint32_t sum1 = summer.tmp_sum();
+        if (1 == map[sum1 % 4096]) {
+            // judge
+            auto iter = sum_offset.find(sum1);
+            if (iter != sum_offset.end()) {
+                buf = file_map->MapFileContent(curr - CHUNK_SIZE, CHUNK_SIZE);
+                string* strong_sum = summer.StrongSum(buf, CHUNK_SIZE);
+                if (*strong_sum == *(iter->second->strong_sum_)) {
+                    WLOG(INFO, "md5 sum of src chunk %s", iter->second->strong_sum_->c_str());
+                    WLOG(INFO, "md5 sum of dst chunk %s", strong_sum->c_str());
+                    WLOG(INFO, "%d is replaced with %d, curr: %d",
+                            iter->second->offset_, curr - CHUNK_SIZE, curr);
+                    iter->second->from_ = false;
+                    iter->second->offset_ = curr - CHUNK_SIZE;
+                    continue;
+                }
+            }
+        }
+        int32_t map_length = dst_size - curr;
+        if (map_length > CHUNK_SIZE) {
+            map_length = CHUNK_SIZE;
+        }
+        buf = file_map->MapFileContent(curr, map_length);
+        for (int32_t i = 0; i < CHUNK_SIZE; ++i) {
+            uint32_t sum1 = summer.Update(buf[i]);
+            if (1 == map[sum1 % 4096]) {
+                // judge
+                auto iter = sum_offset.find(sum1);
+                if (iter != sum_offset.end()) {
+                    WLOG(INFO, "find equal sum1, offset%d", curr - CHUNK_SIZE);
+                    buf = file_map->MapFileContent(curr - CHUNK_SIZE + 1, CHUNK_SIZE);
+                    string* strong_sum = summer.StrongSum(buf, CHUNK_SIZE);
+                    if (*strong_sum == *(iter->second->strong_sum_)) {
+                        WLOG(INFO, "md5 sum of src chunk %s", iter->second->strong_sum_->c_str());
+                        WLOG(INFO, "md5 sum of dst chunk %s", strong_sum->c_str());
+                        WLOG(INFO, "%d is replaced with %d, curr: %d, i:%d",
+                                iter->second->offset_, curr - CHUNK_SIZE, curr, i);
+                        iter->second->from_ = false;
+                        iter->second->offset_ = curr - CHUNK_SIZE + 1;
+                        break;
+                    }
+                }
+            }
+            ++curr;
+        }
+    }
+    delete file_map;
 }

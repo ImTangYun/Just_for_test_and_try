@@ -41,7 +41,7 @@ int32_t Client::GetFile(char* src_path, char* dst_path, char* tmp_path)
     list<ChunkInfo*>* meta = GetMeta(src_path);
     if (FileUtils::is_exists_file(dst_path)
             || (FileUtils::get_file_size(dst_path) > 0)) {
-        rsync_service_->ScanFile(meta, dst_path);
+        rsync_service_->ScanFile1(meta, dst_path);
     }
     TimeCounter time_counter;
     ConstructFile(src_path, dst_path, meta, tmp_path);

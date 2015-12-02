@@ -9,9 +9,12 @@
 #include <string>
 #include "checksum.h"
 #include "checksum1.h"
+#include "checksum2.h"
+#include "checksum3.h"
 #include "file_utils.h"
 #include "common.h"
 #include "log.h"
+#include "time_utils.h"
 
 #define CHUNK_SIZE (1024 * 1024 * 4) // 1kb
 #define SCAN_BUFFER_SIZE (1024 * 1024 * 20)
@@ -50,6 +53,9 @@ void scan(char* file_name) {
  
 int main(int argc, char** argv)
 {
+    TimeCounter time_counter;
     scan(argv[1]);
+    time_counter.AddNow();
+    WLOG(DEBUG, "scan file %s cost %.02f", argv[1], time_counter.GetTimeCosts(1));
     return 0;
 }

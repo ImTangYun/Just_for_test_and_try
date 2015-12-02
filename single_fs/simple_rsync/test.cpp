@@ -6,11 +6,12 @@
 #include <stdint.h>
 #include <unordered_map>
 #include "checksum.h"
+#include "common.h"
 
 using std::unordered_map;
 int main()
 {
-    Checksum summer;
+    SUMMER summer;
     char data[] = {
         1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,
         1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,

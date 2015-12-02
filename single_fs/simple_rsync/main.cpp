@@ -10,7 +10,7 @@
 #include "client.h"
 #include "log.h"
 #include "time_utils.h"
-#define PORT 443
+#define PORT 12345
 
 using std::string;
 void run_server()
@@ -42,7 +42,7 @@ void run_client(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    Log::logger_.set_level(ERROR);
+    Log::logger_.set_level(DEBUG);
     if (argc < 2) {
         WLOG(ERROR, "Usage: at least a param!");
         return -1;

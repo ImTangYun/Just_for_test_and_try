@@ -9,6 +9,7 @@
 using std::list;
 class Basesum;
 class ChunkInfo;
+class FileMap;
 
 class RsyncService
 {
@@ -16,9 +17,15 @@ class RsyncService
         RsyncService():summer_(new SUMMER()){}
         list<ChunkInfo*>* GenerateMetaList(const char* path);
         void ScanFile(list<ChunkInfo*>* meta, char* dst_file);
+        void ScanFile1(list<ChunkInfo*>* meta, char* dst_file);
         void GetChunk(char* path, char** buf, int offset, int length);
+        ~RsyncService()
+        {
+            delete summer_;
+        }
     private:
 
+        FileMap* file_map_;
         Basesum* summer_;
 };
 #endif

@@ -2,11 +2,13 @@
 //
 //
 //
-#ifndef COMMON
-#define COMMON
+#ifndef COMMON_H_
+#define COMMON_H_
 #include "checksum2.h"
+#include "checksum3.h"
 
-#define SUMMER Checksum2
+// #define SUMMER Checksum2
+#define SUMMER Checksum3
 #define CHUNK_SIZE (1024 * 1024 * 4) // 1kb
 #define SCAN_BUFFER_SIZE (1024 * 1024 * 20)
 enum RequestType
