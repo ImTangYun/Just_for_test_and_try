@@ -32,6 +32,8 @@ class StreamHandler: public NetHandler
             return 0;
         }
         virtual int OnAccepted(int fd){ return 0;}
+        virtual int OnDisconnected(int fd){ return 0;}
+        virtual int OnConnected(int fd){ return 0;}
         virtual int OnSent(Packet* packet)
         {
             char* data = packet->data();

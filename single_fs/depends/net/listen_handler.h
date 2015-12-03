@@ -13,6 +13,8 @@ class ListenHandler: public NetHandler
         int OnReceived(Packet* packet);
         int OnAccepted(int fd);
         int OnSent(Packet* packet);
+        int OnDisconnected(int fd);
+        int OnConnected(int fd);
         int OnTimeOut();
 };
 #endif

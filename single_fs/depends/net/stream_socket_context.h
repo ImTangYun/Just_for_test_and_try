@@ -9,10 +9,10 @@
 #include "socket_context.h"
 #include "end_point.h"
 #include "communicate_loop.h"
+#include "net_handler.h"
 using std::string;
 using myspace::TaskQueue;
 class Packet;
-class NetHandler;
 class NetMachine;
 class StreamSocketContext: public SocketContext
 {
@@ -28,16 +28,7 @@ class StreamSocketContext: public SocketContext
                 packet_queue_(new TaskQueue<Packet*>()), recv_buffer_(new char[111]),
                 recv_buffer_length_(111), ret_buf_(NULL), replied_(false), need_ack_(false),
                 net_handler_(net_handler){}
-        ~StreamSocketContext()
-        {
-            communicate_loop_->ClearEvent(this);
-            delete packet_queue_;
-            packet_queue_ = NULL;
-            delete [] recv_buffer_;
-            recv_buffer_ = NULL;
-            delete end_point_;
-            end_point_ = NULL;
-        }
+        ~StreamSocketContext();
         int Init();
         int AsyncSendPacket(Packet* packet);
         virtual int HandleOutput();

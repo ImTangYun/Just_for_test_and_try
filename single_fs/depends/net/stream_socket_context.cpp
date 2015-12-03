@@ -11,9 +11,10 @@
 #include "task_queue.h"
 #include "stream_socket_context.h"
 #include "packet.h"
-#include "net_handler.h"
 #include "net_machine.h"
 #include "log.h"
+
+
 int StreamSocketContext::Init()
 {
     if (ip_ != NULL) {
@@ -38,11 +39,26 @@ int StreamSocketContext::Init()
         return -1;
     }
     SetNonblocking(fd_);
+    net_handler_->OnConnected(fd_);
 
     WLOG(DEBUG, "return code of AddEvent is %d",
             net_machine_->communicate_loop()->AddEvent(this, true, true));
     return 0;
 }
+
+StreamSocketContext::~StreamSocketContext()
+{
+    communicate_loop_->ClearEvent(this);
+    close(fd());
+    net_handler_->OnDisconnected(fd());
+    delete packet_queue_;
+    packet_queue_ = NULL;
+    delete [] recv_buffer_;
+    recv_buffer_ = NULL;
+    delete end_point_;
+    end_point_ = NULL;
+}
+
 
 int StreamSocketContext::AsyncSendPacket(Packet* packet)
 {
@@ -60,7 +76,7 @@ int StreamSocketContext::HandleOutput()
     }
 
     WLOG(DEBUG, "the fd of the connection is %d", fd_);
-    
+
     // send protocool code
     uint32_t protocool_code = 1;
     uint32_t net_protocool_code = htonl(protocool_code);
@@ -71,7 +87,7 @@ int StreamSocketContext::HandleOutput()
         packet->head_length() + sizeof(uint32_t) + packet->data_length();
     uint32_t net_whole_length = htonl(whole_length);
     Send((char*)(&net_whole_length), sizeof(net_whole_length));
-    
+
     // send channel id
     uint32_t channel_id = htonl(packet->channel_id());
     Send((char*)(&channel_id), sizeof(channel_id));
@@ -82,13 +98,15 @@ int StreamSocketContext::HandleOutput()
 
     // send head data
     Send(packet->head_data(), packet->head_length());
-    
+
     //send data length
     uint32_t data_length = htonl(packet->data_length());
     Send((char*)(&data_length), sizeof(data_length));
 
     // send packet data
     Send(packet->data(), packet->data_length());
+
+    net_handler_->OnSent(packet);
     delete packet;
     return 0;
 }
@@ -244,11 +262,11 @@ int StreamSocketContext::AdjustBuffer(int received_length)
 }
 int StreamSocketContext::ReallocBuffer(int new_length, int cp_length)
 {
-        char* new_buffer = new char[new_length];
-        memcpy(new_buffer, recv_buffer_, cp_length);
-        delete [] recv_buffer_;
-        recv_buffer_ = new_buffer;
-        recv_buffer_length_ = new_length;
-        WLOG(DEBUG, "new alloced recv_buffer_length_=%d", recv_buffer_length_);
-        return 0;
+    char* new_buffer = new char[new_length];
+    memcpy(new_buffer, recv_buffer_, cp_length);
+    delete [] recv_buffer_;
+    recv_buffer_ = new_buffer;
+    recv_buffer_length_ = new_length;
+    WLOG(DEBUG, "new alloced recv_buffer_length_=%d", recv_buffer_length_);
+    return 0;
 }

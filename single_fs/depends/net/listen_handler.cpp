@@ -28,6 +28,14 @@ int ListenHandler::OnReceived(Packet* packet, EndPoint* end_point)
     socket_context->AsyncSendPacket(packet);
     return 0;
 }
+int ListenHandler::OnDisconnected(int fd)
+{
+    return 0;
+}
+int ListenHandler::OnConnected(int fd)
+{
+    return 0;
+}
 int ListenHandler::OnAccepted(int fd)
 {
     WLOG(DEBUG, "accepted fd :%d", fd);

@@ -92,7 +92,6 @@ int CommunicateLoop::SetEvent(SocketContext* socket_context, bool writable, bool
 int CommunicateLoop::ClearEvent(SocketContext* socket_context)
 {
     int ret = epoll_ctl(efd_, EPOLL_CTL_DEL, socket_context->fd(), NULL);
-    close(socket_context->fd());
     context_list_.remove_node(socket_context->node());
     return ret;
 }
