@@ -438,8 +438,10 @@ void cp7(char* src_file, char* dst_file)
     char* buf = NULL;
     int length = CHUNK_SIZE;
     int i = 0;
+    TimeCounter time_counter;
+    FileMap* file_map = new FileMap(src_file);
     for (; i < count; ++i) {
-        FileUtils::read(&buf, i * CHUNK_SIZE, length, src_file);
+        buf = file_map->MapFileContent(i * CHUNK_SIZE, length);
         ChunkInfo* chunk_info = new ChunkInfo();
         chunk_info->from_ = true;
         chunk_info->offset_ = i * CHUNK_SIZE;
@@ -451,9 +453,10 @@ void cp7(char* src_file, char* dst_file)
         
         map[sum1 % 4096] = 1;
         file_meta.push_back(chunk_info);
-        delete [] buf;
     }
-
+    delete file_map;
+    time_counter.AddNow();
+    WLOG(NOTICE, "sum src cost %.02fms", time_counter.GetTimeCosts(1));
     // the last chunk
     int32_t last = src_size % CHUNK_SIZE;
     if (last > 0) {
@@ -465,7 +468,7 @@ void cp7(char* src_file, char* dst_file)
     }
 
     int32_t dst_size = FileUtils::get_file_size(dst_file);
-    FileMap* file_map = new FileMap(dst_file);
+    file_map = new FileMap(dst_file);
     int32_t curr = 0;
     while (true) {
         // WLOG(DEBUG, "scanning, curr + CHUNK_SIZE%d, dst_size %d", curr + CHUNK_SIZE, dst_size);

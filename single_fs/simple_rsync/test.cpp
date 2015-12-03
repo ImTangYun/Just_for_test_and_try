@@ -163,6 +163,8 @@ int main()
     }
     Checksum cs;
     string* sum = cs.StrongSum(data, sizeof(data));
+    string* sum1 = cs.StrongSum("abcdefghijklmn", 14);
+    printf("sum1 : %s\n", sum1->c_str());
     printf("sum %s\n", sum->c_str());
     return 0;
 }

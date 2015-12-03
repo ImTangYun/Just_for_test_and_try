@@ -22,8 +22,9 @@ list<ChunkInfo*>* RsyncService::GenerateMetaList(const char* path)
     char* buf = NULL;
     int i = 0;
     int length = CHUNK_SIZE;
+    FileMap* file_map = new FileMap((char*)path);
     for (; i < count; ++i) {
-        FileUtils::read(&buf, i * CHUNK_SIZE, length, (char*)path);
+        buf = file_map->MapFileContent(i * CHUNK_SIZE, length);
         ChunkInfo* chunk_info = new ChunkInfo();
         chunk_info->from_ = true;
         chunk_info->offset_ = i * CHUNK_SIZE;
@@ -32,7 +33,6 @@ list<ChunkInfo*>* RsyncService::GenerateMetaList(const char* path)
         chunk_info->strong_sum_ = strong_sum;
         file_meta->push_back(chunk_info);
         chunk_info->weak_sum_ = summer_->Sum1(buf, CHUNK_SIZE);
-        delete [] buf;
     }
     
     int32_t last = src_size % CHUNK_SIZE;
@@ -45,6 +45,7 @@ list<ChunkInfo*>* RsyncService::GenerateMetaList(const char* path)
         chunk_info->strong_sum_ = summer_->StrongSum(buf, last);
         file_meta->push_back(chunk_info);
     }
+    delete file_map;
     return file_meta;
 }
 void RsyncService::GetChunk(char* path, char** buf, int offset, int length)

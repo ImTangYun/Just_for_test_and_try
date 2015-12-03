@@ -19,6 +19,7 @@
 #include "package.h"
 #include "rsync_service.h"
 #include "time_utils.h"
+#include "file_map.h"
 
 int Client::Init()
 {
@@ -54,6 +55,7 @@ void Client::ConstructFile(char* src_file, char* dst_file,
 {
     FILE* fp = fopen(cst_file, "w");
     char* buf = NULL;
+    FileMap* file_map = new FileMap(dst_file);
     for (auto iter = file_meta->begin(); iter != file_meta->end(); ++iter) {
         ChunkInfo* chunk_info = *iter;
         if (true == chunk_info->from_) {
@@ -62,11 +64,11 @@ void Client::ConstructFile(char* src_file, char* dst_file,
             WLOG(INFO, "buf ptr :%p, chunk length %d", buf, chunk_info->length_);
         } else {
             WLOG(INFO, "from dst file");
-            FileUtils::read(&buf, chunk_info->offset_, chunk_info->length_, dst_file);
+            buf = file_map->MapFileContent(chunk_info->offset_, chunk_info->length_);
         }
         fwrite(buf, 1, chunk_info->length_, fp);
-        delete [] buf;
     }
+    delete file_map;
 }
 
 int32_t Client::PutFile(char* src_path, char* dst_path, char* tmp_path)
