@@ -10,7 +10,7 @@
 #include "client.h"
 #include "log.h"
 #include "time_utils.h"
-#define PORT 1235
+#define PORT 1234
 
 using std::string;
 void run_server()

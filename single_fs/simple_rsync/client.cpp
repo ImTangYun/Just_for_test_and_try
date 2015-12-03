@@ -55,18 +55,23 @@ void Client::ConstructFile(char* src_file, char* dst_file,
 {
     FILE* fp = fopen(cst_file, "w");
     char* buf = NULL;
-    FileMap* file_map = new FileMap(dst_file);
+    FileMap* file_map = NULL;
+    if (FileUtils::is_exists_file(dst_file))
+        file_map = new FileMap(dst_file);
     for (auto iter = file_meta->begin(); iter != file_meta->end(); ++iter) {
         ChunkInfo* chunk_info = *iter;
+        buf = NULL;
         if (true == chunk_info->from_) {
             WLOG(INFO, "from src file");
             GetChunk(&buf, chunk_info->offset_, chunk_info->length_, src_file);
+            fwrite(buf, 1, chunk_info->length_, fp);
             WLOG(INFO, "buf ptr :%p, chunk length %d", buf, chunk_info->length_);
+            delete [] buf;
         } else {
             WLOG(INFO, "from dst file");
             buf = file_map->MapFileContent(chunk_info->offset_, chunk_info->length_);
+            fwrite(buf, 1, chunk_info->length_, fp);
         }
-        fwrite(buf, 1, chunk_info->length_, fp);
     }
     delete file_map;
 }

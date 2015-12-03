@@ -16,6 +16,7 @@ class RsyncService
     public:
         RsyncService():summer_(new SUMMER()){}
         list<ChunkInfo*>* GenerateMetaList(const char* path);
+        void FreeMeta(list<ChunkInfo*>* meta);
         void ScanFile(list<ChunkInfo*>* meta, char* dst_file);
         void ScanFile1(list<ChunkInfo*>* meta, char* dst_file);
         void GetChunk(char* path, char** buf, int offset, int length);

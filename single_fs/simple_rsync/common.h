@@ -9,7 +9,7 @@
 
 // #define SUMMER Checksum2
 #define SUMMER Checksum3
-#define CHUNK_SIZE (1024 * 1024 * 4) // 1kb
+#define CHUNK_SIZE (1024 * 1024 * 1) // 1kb
 #define SCAN_BUFFER_SIZE (1024 * 1024 * 20)
 enum RequestType
 {
@@ -33,5 +33,9 @@ struct ChunkInfo
     int32_t offset_;
     int32_t length_;
     string* strong_sum_;
+    ~ChunkInfo()
+    {
+        delete strong_sum_;
+    }
 };
 #endif

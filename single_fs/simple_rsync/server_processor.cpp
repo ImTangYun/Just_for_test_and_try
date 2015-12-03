@@ -113,6 +113,7 @@ void ServerProcessor::GetMeta(TaskNode* node)
     }
     packet->set_packet(data, data_length);
     StreamSocketContext* socket_context = end_point->socket_context();
+    rsync_service_->FreeMeta(meta);
     delete package;
     socket_context->AsyncSendPacket(packet);
 }

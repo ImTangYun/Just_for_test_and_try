@@ -16,5 +16,10 @@ struct TaskNode
         Package* head_;
         RequestType req_;
         string* path_;
+        ~TaskNode()
+        {
+            // delete head_;
+            // delete path_;
+        }
 };
 #endif

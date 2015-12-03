@@ -14,6 +14,13 @@
 
 using std::unordered_map;
 
+void RsyncService::FreeMeta(list<ChunkInfo*>* meta)
+{
+    for (auto iter = meta->begin(); iter != meta->end(); ++iter) {
+        delete *(iter);
+    }
+    delete meta;
+}
 list<ChunkInfo*>* RsyncService::GenerateMetaList(const char* path)
 {
     list<ChunkInfo*>* file_meta = new list<ChunkInfo*>();
