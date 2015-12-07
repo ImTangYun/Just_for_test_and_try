@@ -35,19 +35,29 @@ void construct_file(char* src_file, char* dst_file,
         list<ChunkInfo*> file_meta, char* cst_file)
 {
     FILE* fp = fopen(cst_file, "w");
-    char* buf = NULL;
+    char* buf;
+    FileMap* src_map = new FileMap(src_file);
+    FileMap* dst_map = new FileMap(dst_file);
+    int32_t cp_length = 0;
     for (auto iter = file_meta.begin(); iter != file_meta.end(); ++iter) {
+        buf = NULL;
         ChunkInfo* chunk_info = *iter;
         if (chunk_info->from_ == true) {
             WLOG(INFO, "from src file");
-            FileUtils::read(&buf, chunk_info->offset_, chunk_info->length_, src_file);
+            buf = src_map->MapFileContent(chunk_info->offset_, chunk_info->length_);
+            cp_length += chunk_info->length_;
         } else {
             WLOG(INFO, "from dst file");
-            FileUtils::read(&buf, chunk_info->offset_, chunk_info->length_, dst_file);
+            buf = dst_map->MapFileContent(chunk_info->offset_, chunk_info->length_);
         }
-        fwrite(buf, 1, chunk_info->length_, fp);
-        delete [] buf;
+        if (buf != NULL) 
+            fwrite(buf, 1, chunk_info->length_, fp);
+        else
+            WLOG(WARN, "buf == NULL");
     }
+    WLOG(NOTICE, "copy size is:%d", cp_length);
+    delete src_map;
+    delete dst_map;
 }
 
 void cp4(char* src_file, char* dst_file)
@@ -524,14 +534,14 @@ void cp7(char* src_file, char* dst_file)
     }
     delete file_map;
 
-    // construct_file(src_file, dst_file, file_meta, "client_data/test.dat");
+    construct_file(src_file, dst_file, file_meta, "client_data/test.dat");
 }
 
 
 
 int main(int argc, char** argv)
 {
-    Log::logger_.set_level(DEBUG);
+    Log::logger_.set_level(NOTICE);
     WLOG(DEBUG, "main");
     TimeCounter time_counter;
     cp7(argv[1], argv[2]);

@@ -9,7 +9,7 @@
 
 // #define SUMMER Checksum2
 #define SUMMER Checksum3
-#define CHUNK_SIZE (1024 * 1024 * 1) // 1kb
+#define CHUNK_SIZE (1024 * 2 * 1) // 1kb
 #define SCAN_BUFFER_SIZE (1024 * 1024 * 20)
 enum RequestType
 {
