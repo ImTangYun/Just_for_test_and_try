@@ -40,6 +40,7 @@ fi
 
 if [ "$1"x = "-a"x ] && [ "$2"x = "make"x ]
 then
+    libtoolize -f -c
     autoscan
     aclocal
     autoconf

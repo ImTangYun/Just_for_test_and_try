@@ -7,6 +7,10 @@
 
 int main(int argc, char** argv)
 {
+    if (argc < 3) {
+        WLOG(ERROR, "Usage: ./rdiff <old_file> <sig_file> <new_file> <delta_file> <result>");
+        return -1;
+    }
     TimeCounter time_counter;
     RsyncCore rsync;
     if (argc >= 3)
