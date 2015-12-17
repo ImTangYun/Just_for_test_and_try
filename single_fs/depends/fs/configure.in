@@ -2,17 +2,19 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([main], [1.0], [tang@qq.com])
-AM_INIT_AUTOMAKE(main,1.0)
+#AC_INIT([main], [1.0], [tang@qq.com])
+#AM_INIT_AUTOMAKE(main,1.0)
+AC_INIT([libifs.a], [0.1], [tang@qq.com])
+AM_INIT_AUTOMAKE
 #AC_CONFIG_SRCDIR([common.h])
 #AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_CC
-CXXFLAGS="-std=c++0x"
+#AC_PROG_CC
+CXXFLAGS="-std=c++0x -fPIC"
 
-AC_PROG_LIBTOOL
+#AC_PROG_LIBTOOL
 # Checks for libraries.
 AC_PROG_RANLIB
 
