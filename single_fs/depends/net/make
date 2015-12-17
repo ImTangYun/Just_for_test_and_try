@@ -29,6 +29,7 @@ then
     rm ltmain.sh
     rm autoscan.log
     rm configure.scan
+    rm Makefile.in
 fi 
 
 if [ "$1"x = "-c"x ] && [ "$2"x = "make"x ]
@@ -52,4 +53,5 @@ if [ "$1"x = "install"x ]
 then
     cp *.a $LIB_DIR
     cp *.h $INC_DIR
+    cp *.so $LIB_DIR
 fi
