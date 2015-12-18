@@ -13,7 +13,7 @@
 #include "circle_queue.h"
 #include "common.h"
 #define schar unsigned char
-#define CHAR_OFFSET 5
+#define CHAR_OFFSET 0
 #define PRIME 49667
 #define MDX_CTX MD4_CTX
 using type::CircleQueue;
