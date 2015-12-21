@@ -9,14 +9,17 @@ AM_INIT_AUTOMAKE
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_CC
+#AC_PROG_CC
 
-AC_PROG_LIBTOOL
+CXXFLAGS="-std=c++0x -fPIC"
+#AC_PROG_LIBTOOL
 # Checks for libraries.
 AC_PROG_RANLIB
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
+AC_CHECK_FUNCS([gettimeofday])
+AC_CHECK_HEADERS([sys/time.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL

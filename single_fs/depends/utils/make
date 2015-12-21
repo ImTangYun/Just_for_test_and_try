@@ -1,0 +1,58 @@
+#!/bin/sh
+
+LIB_DIR="../../lib"
+INC_DIR="../../include/"
+
+if [ "$1"x = "make"x ]
+then
+    make
+fi
+
+if [ "$1"x = "clean"x ]
+then
+    make clean
+fi
+
+if [ "$1"x = "-a"x ] && [ "$2"x = "clean"x ]
+then
+    make clean
+    make distclean
+    rm -r autom4te.cache 
+    rm aclocal.m4
+    rm configure
+    rm config.guess
+    rm main
+    rm missing
+    rm config.sub
+    rm depcomp
+    rm install-sh
+    rm ltmain.sh
+    rm autoscan.log
+    rm configure.scan
+    rm Makefile.in
+    rm libtool
+fi 
+
+if [ "$1"x = "-c"x ] && [ "$2"x = "make"x ]
+then
+    make clean
+    make
+fi 
+
+if [ "$1"x = "-a"x ] && [ "$2"x = "make"x ]
+then
+    autoscan
+    aclocal
+    autoconf
+    libtoolize --automake
+    automake --add-missing
+    ./configure
+    make
+fi
+
+if [ "$1"x = "install"x ]
+then
+    cp *.a $LIB_DIR
+    cp *.h $INC_DIR
+    cp *.so $LIB_DIR
+fi
