@@ -48,6 +48,9 @@ int StreamSocketContext::Init()
 
 StreamSocketContext::~StreamSocketContext()
 {
+    WLOG(DEBUG, "before OnClose");
+    net_handler_->OnClose(end_point_);
+    WLOG(DEBUG, "after OnClose");
     communicate_loop_->ClearEvent(this);
     close(fd());
     net_handler_->OnDisconnected(fd());
@@ -218,7 +221,7 @@ int StreamSocketContext::HandleInput() {
         // AdjustBuffer(received_length);
     }
     finish = clock();
-    WLOG(NOTICE, "recv data cost %fs ", (double)(finish - start) / CLOCKS_PER_SEC);
+    // WLOG(NOTICE, "recv data cost %fs ", (double)(finish - start) / CLOCKS_PER_SEC);
 
     uint32_t* head = reinterpret_cast<uint32_t*>(recv_buffer_);
     uint32_t channel_id = ntohl(head[0]);

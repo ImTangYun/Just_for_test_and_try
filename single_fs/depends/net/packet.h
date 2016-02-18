@@ -5,6 +5,7 @@
 #ifndef PACKET
 #define PACKET
 #include <stdint.h>
+#include <string.h>
 #include "singleton.h"
 #include "channel.h"
 class EndPoint;
@@ -50,6 +51,19 @@ class Packet
         char* data() {return data_;}
         int64_t data_length() {return data_length_;}
         EndPoint* end_point() {return end_point_;}
+        Packet* GetCopy() 
+        {
+            char* head_data = new char[head_length_];
+            memmove(head_data, head_data_, head_length_);
+            char* data = new char[data_length_];
+            memmove(data, data_, data_length_);
+            Packet* packet = new Packet();
+            packet->set_head(head_data, head_length_);
+            packet->set_packet(data, data_length_);
+            packet->set_channel_id(channel_id_);
+            packet->set_end_point(end_point_);
+            return packet;
+        }
     private:
         char* head_data_;
         uint32_t head_length_;

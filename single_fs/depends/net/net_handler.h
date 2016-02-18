@@ -16,5 +16,6 @@ class NetHandler
         virtual int OnDisconnected(int fd) = 0;
         virtual int OnConnected(int fd) = 0;
         virtual int OnTimeOut() = 0;
+        virtual int OnClose(EndPoint* end_point) = 0;
 };
 #endif

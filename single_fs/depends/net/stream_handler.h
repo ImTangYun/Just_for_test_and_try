@@ -43,5 +43,6 @@ class StreamHandler: public NetHandler
             return 0;
         }
         virtual int OnTimeOut(){return 0;}
+        virtual int OnClose(EndPoint* end_point){return 0;}
 };
 #endif

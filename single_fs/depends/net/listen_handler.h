@@ -16,5 +16,6 @@ class ListenHandler: public NetHandler
         int OnDisconnected(int fd);
         int OnConnected(int fd);
         int OnTimeOut();
+        int OnClose(EndPoint* end_point);
 };
 #endif

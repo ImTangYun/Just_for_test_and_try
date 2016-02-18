@@ -20,5 +20,6 @@ void CthreadMutex::Lock()
 }
 void CthreadMutex::Unlock()
 {
+    WLOG(DEBUG, "ulock");
     pthread_mutex_unlock(&lock_);
 }

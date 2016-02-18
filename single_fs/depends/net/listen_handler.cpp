@@ -52,3 +52,6 @@ int ListenHandler::OnTimeOut()
 {
     return 0;
 }
+int ListenHandler::OnClose(EndPoint* end_point)
+{
+}
