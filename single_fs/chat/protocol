@@ -1,0 +1,41 @@
+||||  |||| |||||||||||||||
+type  req   data
+
+reqest of chat
+||||||||| ||||||||||  ||||||| ||||||||||||  ||||||||| |||||||  |||||||||||
+req type  sender_len  sender  receiver_len  receiver  msg_len  msg
+(uint32)  uint32_t    string  uint32_t      string    uint32_t string
+
+1.request of meta data
+HEAD:
+||||||||  ||||||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||
+req type   path_length   path                                                             
+int32_t    int32_t       path_length of chars
+DATA:
+NULL
+
+response of meta req
+HEAD:
+|||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+resp type   node_num                                                                  
+int32_t     int32_t                                                                    
+DATA(repeate of next structure):
+||||||||||||||||||||||||||||||||||||
+wkhash   offset   length   sthash                                                                        
+uint32_t int32_t  int32_t  32 chars
+
+2.request of chunk
+HEAD:
+||||||||  |||||||||||  ||||||||||||||||||||  |||||||  |||||||||||||||||||
+req type  path_length  path                  offset   length             
+int32_t   int32_t      path_length of chars  int32_t  int32_t
+
+response of get chunk req
+HEAD:
+|||||||||  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+resp type                                                                    
+int32_t                                                                         
+DATA:
+||||||||||||||||||||||||||||||||||||
+chunk data                                                                        
+bin data
