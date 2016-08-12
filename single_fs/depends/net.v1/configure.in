@@ -1,0 +1,34 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.63])
+AC_INIT([libmachine.a], [1.0], [xx@xx.com])
+#AC_CONFIG_SRCDIR([stream_handler.h])
+AM_INIT_AUTOMAKE
+#AC_CONFIG_HEADERS([packet.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+
+CXXFLAGS="-std=c++0x -fPIC" -g
+#AC_PROG_LIBTOOL
+# Checks for libraries.
+AC_PROG_RANLIB
+AC_CHECK_FUNCS([memmove])
+
+# Checks for header files.
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
+AC_CHECK_HEADERS([sys/time.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_TYPE_INT64_T
+AC_TYPE_UINT32_T
+AC_TYPE_INT32_T
+
+# Checks for library functions.
+AC_CHECK_FUNCS([bzero inet_ntoa memset socket strerror])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

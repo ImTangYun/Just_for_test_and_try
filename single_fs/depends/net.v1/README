@@ -1,0 +1,8 @@
+#the format of the protocool:
+
+
+4byte     4byte      4byte                  4byte   
+||||||||  |||||||||  ||||||||  |||||||...  |||||||  ||||||...
+proto     total_len  head_len  head_data   data_len  data 
+
+send and recv data with the same thread, client can only sync send and recv data
